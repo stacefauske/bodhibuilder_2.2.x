@@ -24,7 +24,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# ORIGINAL COMMENTS:
+# ORIGINAL REMASTERSYS COMMENTS:
 # remastersys script to make an installable livecd/dvd from an (XK)Ubuntu installed
 # and customized system
 #  Created by Tony "Fragadelic" Brijeski
@@ -729,11 +729,11 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
         find /usr/lib/ -name 'isolinux.bin' -exec cp -f {} ${WORKDIR}/ISOTMP/isolinux/ \;
         #find fix for vesamenu.32 provided by Krasimir S. Stefanov <lokiisyourmaster@gmail.com>
         #~ VESAMENU=`find /usr -print0 | grep -FzZ "syslinux/vesamenu.c32"`
-        VERSION=`lsb_release -r | awk '{print$2}' | cut -d. -f1`
-        if [ "${VERSION}" -le "14" ] ; then
+        UBUVERSION=`lsb_release -r | awk '{print$2}' | cut -d. -f1`
+        if [ "${UBUVERSION}" -le "14" ] ; then
           VESAMENU=`find /usr/lib/ -name "vesamenu.c32" | grep "syslinux/vesamenu.c32"`
           cp ${VESAMENU} ${WORKDIR}/ISOTMP/isolinux/
-        elif [ "${VERSION}" -gt "14" ] ; then
+        elif [ "${UBUVERSION}" -gt "14" ] ; then
           #~ case ${ARCH} in
             #~ amd64 )
               #~ VESAMENU=`find /usr/lib/ -name "vesamenu.c32" | grep "efi64/vesamenu.c32"`
@@ -779,7 +779,10 @@ FOO
 
     # Step 4 - Make the filesystem.manifest and filesystem.manifest-desktop
     log_msg "Creating filesystem.manifest and filesystem.manifest-desktop"
+    # May need to make change below on 'dpkg-query' line because 'version' var is not assigned earlier
+    # As a note I changed VERSION var to UBUVERSION earlier in script (note all CAPS) :
     dpkg-query -W --showformat='${Package} ${Version}\n' > ${WORKDIR}/ISOTMP/casper/filesystem.manifest
+    #~ dpkg-query -W --showformat='${Package} ${UBUVERSION}\n' > ${WORKDIR}/ISOTMP/casper/filesystem.manifest
     cp ${WORKDIR}/ISOTMP/casper/filesystem.manifest ${WORKDIR}/ISOTMP/casper/filesystem.manifest-desktop
 
     # Suggested by lkjoel from Ubuntu Forums - Joel Leclerc to remove the frontend so the Install menu item is not on the installed system
