@@ -1343,21 +1343,6 @@ iso (){
                   -isohybrid-gpt-basdat \
                   -isohybrid-apm-hfsplus \
                   -o ${WORKDIR}/${CUSTOMISO} "${WORKDIR}/ISOTMP" 2>>${WORKDIR}/bodhibuilder.log 1>>${WORKDIR}/bodhibuilder.log
-                #~ # TEST xorriso for 16.04
-                #~ #    -- On 4/21, I used this set of commands to create an ISO, and I still got a kernel panic, so reverting back to xorriso commands above.
-                #~ #    -- As of this point, I'm going to play with the "-partition_offset" number to see if I can make it play nice without kernel panic.
-                #~ ${CREATEISO} -as mkisofs \
-                  #~ -isohybrid-mbr ${WORKDIR}/ISOTMP/isolinux/isohdpfx.bin \
-                  #~ -c isolinux/boot.cat \
-                  #~ -b isolinux/isolinux.bin \
-                  #~ -no-emul-boot \
-                  #~ -boot-load-size 4 \
-                  #~ -boot-info-table \
-                  #~ -eltorito-alt-boot \
-                  #~ -e boot/grub/efi.img \
-                  #~ -no-emul-boot \
-                  #~ -isohybrid-gpt-basdat \
-                  #~ -o ${WORKDIR}/${CUSTOMISO} "${WORKDIR}/ISOTMP" 2>>${WORKDIR}/bodhibuilder.log 1>>${WORKDIR}/bodhibuilder.log
               ;;
               * ) # 32-bit arch using xorriso
                 log_msg "creating 32-bit ISO with xorriso"
