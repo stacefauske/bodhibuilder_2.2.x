@@ -5,7 +5,7 @@ Maintainer: Jeff Hoogland, Stace Fauske & Charles van de Beek
 Architecture: all
 Version: 2.2.x
 Depends: memtest86+, coreutils, dialog, mkisofs, dpkg-dev | genisoimage, findutils, bash, passwd, sed, squashfs-tools, casper, rsync, mount, eject, libdebian-installer4, os-prober, ubiquity-frontend-debconf, user-setup, discover1 | discover, laptop-detect, syslinux, util-linux, xresprobe, python, python-glade2, python-vte, plymouth-x11
-Recommends: xorriso
+Recommends: xorriso, mokutil
 Conflicts: remastersys, remastersys-gtk
 Provides: remastersys, remastersys-gtk
 #Vcs-Browser: https://github.com/Deepspeed/bodhi3packages
