@@ -8,6 +8,5 @@ Depends: memtest86+, coreutils, dialog, mkisofs, dpkg-dev | genisoimage, finduti
 Recommends: xorriso, mokutil
 Conflicts: remastersys, remastersys-gtk
 Provides: remastersys, remastersys-gtk
-#Vcs-Browser: https://github.com/Deepspeed/bodhi3packages
 Description: Scripts used for building Bodhi Linux ISO images
  A set of scripts based on remastersys to build bodhi ISO images
