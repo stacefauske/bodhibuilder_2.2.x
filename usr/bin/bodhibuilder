@@ -289,7 +289,7 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
     log_msg "Making sure popularity contest is not installed"
     apt-get -y -q remove popularity-contest &> /dev/null
 
-    # check whether system is gnome or kde based to load the correct ubiquity frontend
+    # check whether system is kde based or other to load the correct ubiquity frontend
     if [ "`ps axf | grep startkde | grep -v grep`" != "" -o "`ps axf | grep kwin | grep -v grep`" != "" ] ; then
         log_msg "Installing the Ubiquity KDE frontend"
         apt-get -y -q install ubiquity-frontend-kde &> /dev/null
@@ -833,19 +833,39 @@ FOO
         if [ "${BACKUPSHOWINSTALL}" = "1" ] ; then
             # copy the install icon to the sudo users desktop
             log_msg "Copying the ubiquity install icon to the desktop of ${LIVEUSER}"
-            UBIQUITYDESKTOP=`find /usr/share/applications -name 'ubiquity*.desktop' | head -1`
+            if [ -e /etc/bodhibuilder/ubiquity/ubiquity.desktop ] ; then
+              UBIQUITYDESKTOP="/etc/bodhibuilder/ubiquity/ubiquity.desktop"
+            fi
             if [ ! "${UBIQUITYDESKTOP}" ] ; then
-                UBIQUITYDESKTOP=`find /usr -name 'ubiquity*.desktop' | head -1`
+              UBIQUITYDESKTOP=`find /usr/share/applications -name 'ubiquity*.desktop' | head -1`
+              if [ ! "${UBIQUITYDESKTOP}" ] ; then
+                  UBIQUITYDESKTOP=`find /usr -name 'ubiquity*.desktop' | head -1`
+              fi
             fi
             if [ "${UBIQUITYDESKTOP}" ] ; then
                 install -d -o ${LIVEUSER} -g ${LIVEUSER} /${LIVEHOME}/Desktop &> /dev/null
                 install -D -o ${LIVEUSER} -g ${LIVEUSER} ${UBIQUITYDESKTOP} /${LIVEHOME}/Desktop/ &> /dev/null
-                sed -i "s/RELEASE/${LIVECDLABEL}/" "/${LIVEHOME}/Desktop/`basename ${UBIQUITYDESKTOP}`" &> /dev/null
+                #~ sed -i "s/RELEASE/${LIVECDLABEL}/" "/${LIVEHOME}/Desktop/`basename ${UBIQUITYDESKTOP}`" &> /dev/null
+                sed -i "s/_LIVE_CD_LABEL_/${LIVECDLABEL}/" "/${LIVEHOME}/Desktop/`basename ${UBIQUITYDESKTOP}`" &> /dev/null
                 echo "ubiquity command:  `grep -i exec= ${UBIQUITYDESKTOP}`" >>${WORKDIR}/bodhibuilder.log
             fi
         fi
-
-    fi # end $OPT1 = backup
+    elif [ "${OPT1}" = "dist" ] ; then
+        # copy over bb's ubiquity.desktop to the host system with the custom name 'Install ${LIVECDLABEL}'
+        log_msg "copying over bodhibuilder's ubiquity.desktop to the host system with the custom name 'Install ${LIVECDLABEL}'"
+        if [ ! -e /usr/share/icons/bbinstall.png ] ; then
+          echo "- copy over icon" >>${WORKDIR}/bodhibuilder.log
+          cp -f /etc/bodhibuilder/ubiquity/bbinstall.png /usr/share/icons/bbinstall.png
+        fi
+        if [ ! -e /usr/share/applications/UBIQUITY.desktop ] ; then
+          echo "- rename original ubiquity.desktop to UBIQUITY.desktop" >>${WORKDIR}/bodhibuilder.log
+          find /usr/share/applications -name 'ubiquity.desktop' -execdir mv '{}' UBIQUITY.desktop \;
+        fi
+        echo "- move custom ubiquity.desktop into applications dir" >>${WORKDIR}/bodhibuilder.log
+        cp -f /etc/bodhibuilder/ubiquity/ubiquity.desktop /usr/share/applications/
+        echo "- set custom name to 'Install ${LIVECDLABEL}'" >>${WORKDIR}/bodhibuilder.log
+        sed -i "s/_LIVE_CD_LABEL_/${LIVECDLABEL}/" /usr/share/applications/ubiquity.desktop &> /dev/null
+    fi # end $OPT1 = backup or dist
 
 
     log_msg "Creating the casper.conf file."
@@ -1137,15 +1157,25 @@ FOO
     sleep 1
 
 
-    #add filesystem size for lucid
+    # add filesystem size for lucid
     log_msg "Calculating the installed filesystem size for the installer"
     unsquashfs -lls ${WORKDIR}/ISOTMP/casper/filesystem.squashfs | grep -v " inodes " | grep -v "unsquashfs:" | awk '{print $3}' | grep -v "," > /tmp/size.tmp
     for i in `cat /tmp/size.tmp`; do a=$((${a}+${i})); done
     echo ${a} > ${WORKDIR}/ISOTMP/casper/filesystem.size
-
+    
+    # remove bodhibuilder-firstboot from the host system
     log_msg "Removing bodhibuilder-firstboot from current system's startup"
     update-rc.d -f bodhibuilder-firstboot remove
     chmod 644 /etc/init.d/bodhibuilder-firstboot
+    
+    # restore ubiquity.desktop
+    if  [ "${OPT1}" = "dist" ] ; then
+      if [ -e /usr/share/applications/UBIQUITY.desktop ] ; then
+        log_msg "restoring ubiquity.desktop on the host system"
+        mv -f /usr/share/applications/ubiquity.desktop /usr/share/applications/ubiquity.desktop_BB
+        mv -f /usr/share/applications/UBIQUITY.desktop /usr/share/applications/ubiquity.desktop
+      fi
+    fi
 }
 ##### END function cdfs #####
 
