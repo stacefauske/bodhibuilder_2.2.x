@@ -148,6 +148,13 @@ log_msg() {
 #~ }
 
 
+# what kind of disk space are we dealing with to begin?
+echo "------------------------------------------------------" >>${WORKDIR}/bodhibuilder.log
+echo "Original disk size information" >>${WORKDIR}/bodhibuilder.log
+df -h >>${WORKDIR}/bodhibuilder.log
+echo "------------------------------------------------------" >>${WORKDIR}/bodhibuilder.log
+
+
 # echo bodhibuilder .conf & .version vars to log
 echo " bodhibuilder.conf variables received:" >>${WORKDIR}/bodhibuilder.log
 cat /etc/bodhibuilder.conf | grep -e '^[A-Z].*=".*"' >>${WORKDIR}/bodhibuilder.log
