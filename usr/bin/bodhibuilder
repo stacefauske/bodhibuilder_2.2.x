@@ -80,6 +80,9 @@ Examples:
    cd before the iso is created.  An example of this would be to modify the isolinux
    portion of the livecd/dvd
 
+If you are prompted for a username and password from the live ISO:
+   username = bodhi  (no password)
+
    >> Type "Q" at any time to exit this help <<
 
 FOO
@@ -125,9 +128,9 @@ fi
 touch ${WORKDIR}/bodhibuilder.log
 cat > ${WORKDIR}/bodhibuilder.log <<FOO
 
-     ===============================
-     ==  bodhibuilder  log  file  ==
-     ===============================
+       ===============================
+       ==  bodhibuilder  log  file  ==
+       ===============================
 
 FOO
 
@@ -301,32 +304,38 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
     fi
 
 
-#lightdm check
-    # Check if they are using lightdm and if it is setup properly for the live default session
-    #   Need to change this section a little
-    #   lightdm has changed a bit, and the running of 'accountsservice' also means that 'lightdm.conf' file will not be read
-    #    but rather a file in /etc/lightdm/lightdm.conf.d/ such as 50-ubuntu.conf
-    if [ "`grep lightdm /etc/X11/default-display-manager`" == "" ] ; then
-      log_msg "Lightdm not setup properly. You must set your default desktop with lightdm prior to remastering" 
-      exit 1
-    fi
-    
-    # this test may be irrelevant in 16.04
-    if [ ! -f /etc/lightdm/lightdm.conf ] ; then
-      log_msg "Lightdm not setup properly for a default session. Missing file /etc/lightdm/lightdm.conf. You must set your default desktop with lightdm prior to remastering"
-      exit 1
-    fi
-    # maybe create a default 51-bb.conf file to put into /etc/lightdm/lightdm.conf.d/ and then change it to this:
-    #~ if [ ! -f /etc/lightdm/lightdm.conf.d/51-bb.conf ] ; then
-      #~ log_msg "Lightdm not setup properly for a default session. Missing bb file in /etc/lightdm/lightdm.conf.d/. You must set your default desktop with lightdm prior to remastering"
+### Don't check for lightdm anymore, just let whatever DM do it's thing
+#~ #lightdm check - changed for 16.04
+    #~ # Check if they are using lightdm and if it is setup properly for the live default session
+    #~ #   Need to change this section a little
+    #~ #   lightdm has changed a bit in 16.04, and the running of 'accountsservice' also means that 'lightdm.conf' file will not be read
+    #~ #    but rather a file in /etc/lightdm/lightdm.conf.d/ such as 50-ubuntu.conf
+    #~ if [ "`grep lightdm /etc/X11/default-display-manager`" == "" ] ; then
+      #~ log_msg "Lightdm not setup properly. You must set your default desktop with lightdm prior to remastering" 
       #~ exit 1
     #~ fi
-    
-    if [ ! -f /usr/share/xsessions/*.desktop ] ; then
-      log_msg "Lightdm not setup properly. Missing a (session).desktop file in /usr/share/xsessions/. Exiting."
-      exit 1
-    fi
-    log_msg "Lightdm detected"
+    #~ 
+    #~ # this test may be irrelevant in 16.04
+    #~ if [ ! -f /etc/lightdm/lightdm.conf ] ; then
+      #~ log_msg "Lightdm not setup properly for a default session. Missing file /etc/lightdm/lightdm.conf. You must set your default desktop with lightdm prior to remastering"
+      #~ exit 1
+    #~ fi
+    #~ # maybe create a default 51-bb.conf file to put into /etc/lightdm/lightdm.conf.d/ and then change it to this:
+    #~ ##~ if [ ! -f /etc/lightdm/lightdm.conf.d/51-bb.conf ] ; then
+      #~ ##~ log_msg "Lightdm not setup properly for a default session. Missing bb file in /etc/lightdm/lightdm.conf.d/. You must set your default desktop with lightdm prior to remastering"
+      #~ ##~ exit 1
+    #~ ##~ fi
+    #~ 
+    #~ if [ ! -f /usr/share/xsessions/*.desktop ] ; then
+      #~ log_msg "Lightdm not setup properly. Missing a (session).desktop file in /usr/share/xsessions/. Exiting."
+      #~ exit 1
+    #~ fi
+    #~ log_msg "Lightdm detected"
+
+
+    # Check and log the display manager in use:
+    currentdm="`cat /etc/X11/default-display-manager`"
+    echo "Current Display Manager is @ ${currentdm}"
 
 
 
