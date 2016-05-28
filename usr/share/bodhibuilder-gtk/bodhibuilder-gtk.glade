@@ -41,7 +41,6 @@
                   </widget>
                   <packing>
                     <property name="right_attach">2</property>
-                    <property name="y_options">GTK_EXPAND</property>
                   </packing>
                 </child>
                 <child>
@@ -50,12 +49,12 @@
                     <property name="can_focus">False</property>
                     <property name="xalign">0</property>
                     <property name="label" translatable="yes">Backup complete system including user data</property>
-                    <property name="wrap">True</property>
                     <property name="width_chars">60</property>
                   </widget>
                   <packing>
                     <property name="left_attach">2</property>
                     <property name="right_attach">3</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
@@ -72,7 +71,6 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
-                    <property name="y_options">GTK_EXPAND</property>
                   </packing>
                 </child>
                 <child>
@@ -81,14 +79,13 @@
                     <property name="can_focus">False</property>
                     <property name="xalign">0</property>
                     <property name="label" translatable="yes">Make a Distributable copy to share with friends - both cdfs and iso will be created</property>
-                    <property name="wrap">True</property>
-                    <property name="width_chars">60</property>
                   </widget>
                   <packing>
                     <property name="left_attach">2</property>
                     <property name="right_attach">3</property>
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
@@ -105,7 +102,6 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">2</property>
                     <property name="bottom_attach">3</property>
-                    <property name="y_options">GTK_EXPAND</property>
                   </packing>
                 </child>
                 <child>
@@ -114,7 +110,6 @@
                     <property name="can_focus">False</property>
                     <property name="xalign">0</property>
                     <property name="label" translatable="yes">Make a Distributable copy filesystem only - good if you want to add files to the cd</property>
-                    <property name="wrap">True</property>
                     <property name="width_chars">60</property>
                   </widget>
                   <packing>
@@ -122,6 +117,7 @@
                     <property name="right_attach">3</property>
                     <property name="top_attach">2</property>
                     <property name="bottom_attach">3</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
@@ -138,7 +134,6 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">3</property>
                     <property name="bottom_attach">4</property>
-                    <property name="y_options">GTK_EXPAND</property>
                   </packing>
                 </child>
                 <child>
@@ -147,7 +142,6 @@
                     <property name="can_focus">False</property>
                     <property name="xalign">0</property>
                     <property name="label" translatable="yes">Make distributable iso file only - cd filesystem must have been completed already</property>
-                    <property name="wrap">True</property>
                     <property name="width_chars">60</property>
                   </widget>
                   <packing>
@@ -155,6 +149,7 @@
                     <property name="right_attach">3</property>
                     <property name="top_attach">3</property>
                     <property name="bottom_attach">4</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
@@ -172,7 +167,6 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">4</property>
                     <property name="bottom_attach">5</property>
-                    <property name="y_options">GTK_EXPAND</property>
                   </packing>
                 </child>
                 <child>
@@ -181,7 +175,6 @@
                     <property name="can_focus">False</property>
                     <property name="xalign">0</property>
                     <property name="label" translatable="yes">Remove temporary files</property>
-                    <property name="wrap">True</property>
                     <property name="width_chars">60</property>
                   </widget>
                   <packing>
@@ -200,6 +193,7 @@
                     <property name="right_attach">3</property>
                     <property name="top_attach">5</property>
                     <property name="bottom_attach">6</property>
+                    <property name="y_options"/>
                   </packing>
                 </child>
                 <child>
@@ -215,7 +209,7 @@
                     <property name="top_attach">6</property>
                     <property name="bottom_attach">7</property>
                     <property name="x_options">GTK_FILL</property>
-                    <property name="y_options">GTK_EXPAND</property>
+                    <property name="y_options"/>
                   </packing>
                 </child>
                 <child>
@@ -231,6 +225,7 @@
                     <property name="right_attach">3</property>
                     <property name="top_attach">6</property>
                     <property name="bottom_attach">7</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
@@ -246,7 +241,7 @@
                     <property name="top_attach">7</property>
                     <property name="bottom_attach">8</property>
                     <property name="x_options">GTK_FILL</property>
-                    <property name="y_options">GTK_EXPAND</property>
+                    <property name="y_options"/>
                   </packing>
                 </child>
                 <child>
@@ -284,6 +279,7 @@
                     <property name="right_attach">3</property>
                     <property name="top_attach">7</property>
                     <property name="bottom_attach">8</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
@@ -299,7 +295,7 @@
                     <property name="top_attach">8</property>
                     <property name="bottom_attach">9</property>
                     <property name="x_options">GTK_FILL</property>
-                    <property name="y_options">GTK_EXPAND</property>
+                    <property name="y_options"/>
                   </packing>
                 </child>
                 <child>
@@ -347,6 +343,7 @@
                     <property name="right_attach">3</property>
                     <property name="top_attach">8</property>
                     <property name="bottom_attach">9</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
@@ -362,7 +359,7 @@
                     <property name="top_attach">9</property>
                     <property name="bottom_attach">10</property>
                     <property name="x_options">GTK_FILL</property>
-                    <property name="y_options">GTK_EXPAND</property>
+                    <property name="y_options"/>
                   </packing>
                 </child>
                 <child>
@@ -378,6 +375,7 @@
                     <property name="right_attach">3</property>
                     <property name="top_attach">9</property>
                     <property name="bottom_attach">10</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
               </widget>
@@ -398,10 +396,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="border_width">6</property>
-                <property name="n_rows">14</property>
+                <property name="n_rows">12</property>
                 <property name="n_columns">2</property>
                 <property name="column_spacing">6</property>
-                <property name="row_spacing">6</property>
                 <child>
                   <widget class="GtkLabel" id="label5">
                     <property name="visible">True</property>
@@ -505,55 +502,9 @@
                     <property name="label" translatable="yes">Working directory</property>
                   </widget>
                   <packing>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
+                    <property name="top_attach">4</property>
+                    <property name="bottom_attach">5</property>
                     <property name="x_options">GTK_FILL</property>
-                    <property name="y_options">GTK_FILL</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkHBox" id="hbox1">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <child>
-                      <widget class="GtkEntry" id="entry6">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">This is the temporary working directory and won't be included on the cd/dvd.</property>
-                        <property name="invisible_char">●</property>
-                        <property name="primary_icon_activatable">False</property>
-                        <property name="secondary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">True</property>
-                        <property name="secondary_icon_sensitive">True</property>
-                      </widget>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkButton" id="button8">
-                        <property name="label">...</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="tooltip" translatable="yes">Select working directory</property>
-                        <property name="use_action_appearance">False</property>
-                        <signal name="clicked" handler="on_button8_clicked" swapped="no"/>
-                      </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
                     <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
@@ -561,17 +512,20 @@
                   <widget class="GtkLabel" id="label13">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="xalign">0.25</property>
-                    <property name="label" translatable="yes">&lt;span color="red"&gt;Working directory must be on a drive formatted with a linux filesystem. Bodhibuilder will create the "bodhibuilder" working folder in this folder and will not harm any other files or folders.&lt;/span&gt;</property>
+                    <property name="xalign">0</property>
+                    <property name="xpad">13</property>
+                    <property name="label" translatable="yes">&lt;span color="red"&gt;Working directory must be on a drive formatted with a linux filesystem. 
+Bodhibuilder will create the "bodhibuilder" working folder in this folder and will not harm any other files or folders.&lt;/span&gt;</property>
                     <property name="use_markup">True</property>
-                    <property name="wrap">True</property>
                     <property name="width_chars">100</property>
+                    <property name="max_width_chars">80</property>
                   </widget>
                   <packing>
                     <property name="right_attach">2</property>
-                    <property name="top_attach">4</property>
-                    <property name="bottom_attach">5</property>
+                    <property name="top_attach">5</property>
+                    <property name="bottom_attach">6</property>
                     <property name="y_options">GTK_FILL</property>
+                    <property name="y_padding">5</property>
                   </packing>
                 </child>
                 <child>
@@ -579,11 +533,11 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">0</property>
-                    <property name="label" translatable="yes">Files to exclude</property>
+                    <property name="label" translatable="yes">Files to Exclude</property>
                   </widget>
                   <packing>
-                    <property name="top_attach">5</property>
-                    <property name="bottom_attach">6</property>
+                    <property name="top_attach">6</property>
+                    <property name="bottom_attach">7</property>
                     <property name="x_options">GTK_FILL</property>
                     <property name="y_options">GTK_FILL</property>
                   </packing>
@@ -617,8 +571,8 @@ Separate each entry with a space.</property>
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="right_attach">2</property>
-                    <property name="top_attach">5</property>
-                    <property name="bottom_attach">6</property>
+                    <property name="top_attach">6</property>
+                    <property name="bottom_attach">7</property>
                     <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
@@ -630,8 +584,8 @@ Separate each entry with a space.</property>
                     <property name="label" translatable="yes">URL for ISO</property>
                   </widget>
                   <packing>
-                    <property name="top_attach">6</property>
-                    <property name="bottom_attach">7</property>
+                    <property name="top_attach">9</property>
+                    <property name="bottom_attach">10</property>
                     <property name="x_options">GTK_FILL</property>
                     <property name="y_options">GTK_FILL</property>
                   </packing>
@@ -650,8 +604,8 @@ Separate each entry with a space.</property>
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="right_attach">2</property>
-                    <property name="top_attach">6</property>
-                    <property name="bottom_attach">7</property>
+                    <property name="top_attach">9</property>
+                    <property name="bottom_attach">10</property>
                     <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
@@ -663,8 +617,8 @@ Separate each entry with a space.</property>
                     <property name="label" translatable="yes">Squashfs options</property>
                   </widget>
                   <packing>
-                    <property name="top_attach">7</property>
-                    <property name="bottom_attach">8</property>
+                    <property name="top_attach">10</property>
+                    <property name="bottom_attach">11</property>
                     <property name="x_options">GTK_FILL</property>
                     <property name="y_options">GTK_FILL</property>
                   </packing>
@@ -685,8 +639,8 @@ Separate each entry with a space.</property>
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="right_attach">2</property>
-                    <property name="top_attach">7</property>
-                    <property name="bottom_attach">8</property>
+                    <property name="top_attach">10</property>
+                    <property name="bottom_attach">11</property>
                     <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
@@ -701,8 +655,8 @@ Separate each entry with a space.</property>
                   </widget>
                   <packing>
                     <property name="right_attach">2</property>
-                    <property name="top_attach">8</property>
-                    <property name="bottom_attach">9</property>
+                    <property name="top_attach">11</property>
+                    <property name="bottom_attach">12</property>
                     <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
@@ -714,8 +668,10 @@ Separate each entry with a space.</property>
                     <property name="label" translatable="yes">GRUB name</property>
                   </widget>
                   <packing>
-                    <property name="top_attach">13</property>
-                    <property name="bottom_attach">14</property>
+                    <property name="top_attach">3</property>
+                    <property name="bottom_attach">4</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
@@ -733,8 +689,9 @@ Separate each entry with a space.</property>
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="right_attach">2</property>
-                    <property name="top_attach">13</property>
-                    <property name="bottom_attach">14</property>
+                    <property name="top_attach">3</property>
+                    <property name="bottom_attach">4</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
@@ -742,26 +699,25 @@ Separate each entry with a space.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">0</property>
-                    <property name="label" translatable="yes">Locales to include</property>
+                    <property name="label" translatable="yes">Locales to Include</property>
                   </widget>
                   <packing>
-                    <property name="top_attach">12</property>
-                    <property name="bottom_attach">13</property>
+                    <property name="top_attach">8</property>
+                    <property name="bottom_attach">9</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
                   <widget class="GtkEntry" id="entry9">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip" translatable="yes">Here you can specify locales to include in a
-"dist" remaster only
-  List here the locales you want to keep
-  that are in this path:
+                    <property name="tooltip" translatable="yes">Here you can specify locales to INCLUDE.
+  List here the locales you want to keep that are in this path:
     /usr/share/locale/(locale name)
-  Do not list the whole path, just the directories of the 
-  locales you wish to include. If it's not a "dist" remaster,
-  all locales will be included unless you specifically exclude
-  their directories in the "Files to exclude" section above.</property>
+  Do not list the whole path, just the directories of the
+  locales you wish to INCLUDE in that path.
+  ** If this var is empty, all locales will be included.</property>
                     <property name="invisible_char">●</property>
                     <property name="invisible_char_set">True</property>
                     <property name="primary_icon_activatable">False</property>
@@ -772,8 +728,9 @@ Separate each entry with a space.</property>
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="right_attach">2</property>
-                    <property name="top_attach">12</property>
-                    <property name="bottom_attach">13</property>
+                    <property name="top_attach">8</property>
+                    <property name="bottom_attach">9</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
@@ -781,11 +738,11 @@ Separate each entry with a space.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">0</property>
-                    <property name="label" translatable="yes">Icons to include</property>
+                    <property name="label" translatable="yes">Icons to Include</property>
                   </widget>
                   <packing>
-                    <property name="top_attach">11</property>
-                    <property name="bottom_attach">12</property>
+                    <property name="top_attach">7</property>
+                    <property name="bottom_attach">8</property>
                     <property name="x_options">GTK_FILL</property>
                     <property name="y_options">GTK_FILL</property>
                   </packing>
@@ -794,15 +751,11 @@ Separate each entry with a space.</property>
                   <widget class="GtkEntry" id="entry8">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip" translatable="yes">Here you can specify icons or icon sets to include in a
-"dist" remaster only.
-  List here the icons or sets you want to keep
-  that are in this path:
+                    <property name="tooltip" translatable="yes">Here you can specify icons or icon sets to INCLUDE.
+  List here the icons or sets you want to keep that are in this path:
     /usr/share/icons/(icon or icon set name)
-  Do not list the whole path, just the set or icon name.
-  If it's not a "dist" remaster, all icon sets will be included
-  unless you specifically exclude their directories in the
-  "Files to exclude" section above.</property>
+  Do not list the whole path, just the set or icon name in that path.
+  ** If this var is empty, all icons will be included.</property>
                     <property name="invisible_char">●</property>
                     <property name="invisible_char_set">True</property>
                     <property name="primary_icon_activatable">False</property>
@@ -813,48 +766,58 @@ Separate each entry with a space.</property>
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="right_attach">2</property>
-                    <property name="top_attach">11</property>
-                    <property name="bottom_attach">12</property>
+                    <property name="top_attach">7</property>
+                    <property name="bottom_attach">8</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="label24">
+                  <widget class="GtkHBox" id="hbox1">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="tooltip" translatable="yes">Options entered here will not affect a backup remaster.
-However, any options entered here will still be written into
-the config file for future use.</property>
-                    <property name="label" translatable="yes">&lt;span font="bold"&gt;Distribution Options Only (not applicable to backup builds)&lt;/span&gt;</property>
-                    <property name="use_markup">True</property>
-                  </widget>
-                  <packing>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">10</property>
-                    <property name="bottom_attach">11</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkHSeparator" id="hseparator2">
-                    <property name="width_request">550</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <child>
+                      <widget class="GtkEntry" id="entry6">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="has_tooltip">True</property>
+                        <property name="tooltip" translatable="yes">This is the temporary working directory and won't be included on the cd/dvd.</property>
+                        <property name="invisible_char">●</property>
+                        <property name="invisible_char_set">True</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                      </widget>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkButton" id="button8">
+                        <property name="label">...</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="has_tooltip">True</property>
+                        <property name="tooltip" translatable="yes">Select working directory</property>
+                        <property name="use_action_appearance">False</property>
+                        <signal name="clicked" handler="on_button8_clicked" swapped="no"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
                   </widget>
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="right_attach">2</property>
-                    <property name="top_attach">9</property>
-                    <property name="bottom_attach">10</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkHSeparator" id="hseparator3">
-                    <property name="width_request">100</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </widget>
-                  <packing>
-                    <property name="top_attach">9</property>
-                    <property name="bottom_attach">10</property>
+                    <property name="top_attach">4</property>
+                    <property name="bottom_attach">5</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
               </widget>
