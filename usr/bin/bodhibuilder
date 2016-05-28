@@ -605,7 +605,7 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
         # make sure apt-get cache is updated, or it might try to download the wrong version
         log_msg "Updating repos"
         apt-get update >>${WORKDIR}/bodhibuilder.log
-        log_msg "Install dpkg-dev if not already installed"
+        log_msg "Installing dpkg-dev if it's not already installed"
         apt-get install -y -q --no-install-recommends dpkg-dev >>${WORKDIR}/bodhibuilder.log #CHARLES
         # packages to be downloaded and moved into pool: -- ONE directory
         #~ dlpkg_1="efibootmgr grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-amd64-signed grub-efi-ia32 grub-efi-ia32-bin grub-pc-bin grub2-common secureboot-db shim shim-signed"
@@ -680,7 +680,7 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
       cp -a /etc/bodhibuilder/uefi/* ${WORKDIR}/ISOTMP/
       
       # Add custom DISTNAME to UEFI grub
-      sed -e 's/__DISTNAME__/'"${DISTNAME}"'/' ${WORKDIR}/ISOTMP/boot/grub/grub.cfg
+      sed -i 's/__DISTNAME__/'"${DISTNAME}"'/g' ${WORKDIR}/ISOTMP/boot/grub/grub.cfg
       
       # now move deb files section if all have successfully downloaded:
       #  in the above step, the pool dir is copied into ISOTMP
