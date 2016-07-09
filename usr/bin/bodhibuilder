@@ -45,6 +45,9 @@ if [ "$(whoami)" != "root" ] ; then
 fi
 
 
+# load the bodhibuilder version
+. /etc/bodhibuilder/bodhibuilder.version
+
 
 
 ##### FUNCTION helper #####
@@ -90,11 +93,25 @@ FOO
 ##### END function helper #####
 
 
+# If helper or clean is all that's needed, just go ahead and do that
+case $1 in
+    backup|-b|dist|-d )
+    ;;
+    clean|-c )
+        echo "Removing the build directory now..."
+        rm -rf ${WORKDIR}
+        echo "Done...Exiting"
+        exit 0
+    ;;
+    * )
+        helper
+        exit 1
+    ;;
+esac
 
 
 
-# load the bodhibuilder version
-. /etc/bodhibuilder/bodhibuilder.version
+
 
 # load the bodhibuilder.conf file
 . /etc/bodhibuilder.conf
@@ -103,6 +120,7 @@ FOO
 ARCH=`archdetect | cut -d/ -f1`
 SUBARCH=`archdetect | cut -d/ -f2`
 CDBOOTTYPE="ISOLINUX"
+UBUVERSION=`lsb_release -r | awk '{print$2}' | cut -d. -f1`
 
 
 ## if the bodhibuilder.conf file is incorrect or missing, make sure to set defaults
@@ -131,6 +149,7 @@ cat > ${WORKDIR}/bodhibuilder.log <<FOO
        ===============================
        ==  bodhibuilder  log  file  ==
        ===============================
+           bodhibuilder  $BODHIBUILDERVERSION
 
 FOO
 
@@ -158,8 +177,24 @@ echo "------------------------------------------------------" >>${WORKDIR}/bodhi
 # echo bodhibuilder .conf & .version vars to log
 echo " bodhibuilder.conf variables received:" >>${WORKDIR}/bodhibuilder.log
 cat /etc/bodhibuilder.conf | grep -e '^[A-Z].*=".*"' >>${WORKDIR}/bodhibuilder.log
-echo " bodhibuilder.version variables received:" >>${WORKDIR}/bodhibuilder.log
-echo "BODHIBUILDERVERSION:  ${BODHIBUILDERVERSION}" >>${WORKDIR}/bodhibuilder.log
+echo " bodhibuilder version info:" >>${WORKDIR}/bodhibuilder.log
+cat /etc/bodhibuilder/bodhibuilder.version >>${WORKDIR}/bodhibuilder.log
+
+# echo info about system into log file
+echo " System info:"
+echo "ARCH = ${ARCH}" >>${WORKDIR}/bodhibuilder.log
+echo "SUBARCH = ${SUBARCH}" >>${WORKDIR}/bodhibuilder.log
+if [ -e "/sys/firmware/efi/efivars/*" ] ; then
+  echo "EFI vars found at /sys/firmware/efi/efivars/"
+else
+  echo "no EFI vars found at /sys/firmware/efi/efivars/"
+fi
+echo "UBUVERSION = ${UBUVERSION}  (bb's take on Ubuntu version)" >>${WORKDIR}/bodhibuilder.log
+
+echo " lsb-release info:" >>${WORKDIR}/bodhibuilder.log
+cat ${WORKDIR}/dummysys/etc/lsb-release >>${WORKDIR}/bodhibuilder.log
+echo "------------------------------------------------------" >>${WORKDIR}/bodhibuilder.log
+echo "" >>${WORKDIR}/bodhibuilder.log
 
 # echo files/dirs in /etc/bodhibuilder to the log file
 echo " Files & Dirs in location /etc/bodhibuilder:" >>${WORKDIR}/bodhibuilder.log
@@ -371,7 +406,7 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
     log_msg "Creating ${WORKDIR}/ISOTMP folder tree"
     mkdir -p ${WORKDIR}/ISOTMP/{isolinux,install,.disk}
 
-    log_msg "Copying /var and /etc to temp area and excluding extra files  ...  this may take a while so be patient"
+    log_msg "Copying /var and /etc to temp area and excluding extra files  ...  this may take a while so please be patient"
 
 
 
@@ -607,15 +642,20 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
         apt-get update >>${WORKDIR}/bodhibuilder.log
         log_msg "Installing dpkg-dev if it's not already installed"
         apt-get install -y -q --no-install-recommends dpkg-dev >>${WORKDIR}/bodhibuilder.log #CHARLES
-        # packages to be downloaded and moved into pool: -- ONE directory
-        #~ dlpkg_1="efibootmgr grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-amd64-signed grub-efi-ia32 grub-efi-ia32-bin grub-pc-bin grub2-common secureboot-db shim shim-signed"
-        #~ dlpkg_2="b43-fwcutter bcmwl-kernel-source"
-        #~ dlpkg_3="dkms fakeroot grub-pc libfakeroot libuniconf4.6 libwvstreams4.6-base libwvstreams4.6-extras lupin-support mouseemu oem-config oem-config-gtk oem-config-slideshow-ubuntu setserial user-setup wvdial"
-        #~ dlpkg_all="${dlpkg_1} ${dlpkg_2} ${dlpkg_3}" # All packages combined
+        if [ "${UBUVERSION}" -gt 14 ] ; then
+          log_msg "Installing isolinux"
+          apt-get install isolinux
+        fi
+        
         
         # packages to be downloaded and moved into pool: -- 32/64-bit -- ONE directory
-        dlpkg_32="efibootmgr grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-ia32 grub-efi-ia32-bin grub-pc-bin grub2-common secureboot-db b43-fwcutter bcmwl-kernel-source dkms fakeroot grub-pc libfakeroot libuniconf4.6 libwvstreams4.6-base libwvstreams4.6-extras lupin-support mokutil mouseemu oem-config oem-config-gtk oem-config-slideshow-ubuntu setserial user-setup wvdial" # 32-bit packages
-        dlpkg_64="grub-efi-amd64-signed shim shim-signed" # 64-bit packages
+        if [ "${UBUVERSION}" -le 14 ] ; then
+          dlpkg_32="efibootmgr grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-ia32 grub-efi-ia32-bin grub-pc-bin grub2-common secureboot-db b43-fwcutter bcmwl-kernel-source dkms fakeroot grub-pc libfakeroot libuniconf4.6 libwvstreams4.6-base libwvstreams4.6-extras lupin-support mouseemu oem-config oem-config-gtk oem-config-slideshow-ubuntu setserial user-setup wvdial" # 32-bit packages
+          dlpkg_64="grub-efi-amd64-signed shim shim-signed" # 64-bit packages
+        else
+          dlpkg_32="efibootmgr grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-ia32 grub-efi-ia32-bin grub-pc-bin grub2-common secureboot-db b43-fwcutter bcmwl-kernel-source dkms fakeroot grub-pc libfakeroot libuniconf4.6 libwvstreams4.6-base libwvstreams4.6-extras lupin-support mokutil mouseemu oem-config oem-config-gtk oem-config-slideshow-ubuntu setserial user-setup wvdial" # 32-bit packages
+          dlpkg_64="grub-efi-amd64-signed shim shim-signed" # 64-bit packages
+        fi
         case ${ARCH} in
           amd64 )
             dlpkg_all="${dlpkg_32} ${dlpkg_64}"
@@ -720,16 +760,16 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
     # BB EFI BOOT
     # Customize file '/etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu' to point to either
     # vmlinuz (32b) or vmlinuz.efi (64b) kernel based on the architechture of the system.
-    if [ "${ARCH}" = "amd64" ] ; then # replace 'vmlinuz' with 'vmlinuz.efi'
-        log_msg "Converting isolinux.cfg.vesamenu to UEFI bootable (vmlinuz.efi)"
-        sed -i 's/vmlinuz$/vmlinuz\.efi/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
-    else # replace 'vmlinuz.efi' with 'vmlinuz'
-        log_msg "Converting isolinux.cfg.vesamenu to 32-bit (vmlinuz)"
-        sed -i 's/vmlinuz\.efi$/vmlinuz/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
-    fi
+    #~ if [ "${ARCH}" = "amd64" ] ; then # replace 'vmlinuz' with 'vmlinuz.efi'
+        #~ log_msg "Converting isolinux.cfg.vesamenu to UEFI bootable (vmlinuz.efi)"
+        #~ sed -i 's/vmlinuz$/vmlinuz\.efi/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
+    #~ else # replace 'vmlinuz.efi' with 'vmlinuz'
+        #~ log_msg "Converting isolinux.cfg.vesamenu to 32-bit (vmlinuz)"
+        #~ sed -i 's/vmlinuz\.efi$/vmlinuz/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
+    #~ fi
     
     #   ? Base on existence of /sys/firmware/efi/efivars/* files instead so it can be a 32b efi install?
-    #~ if [ -e = "/sys/firmware/efi/efivars/*" ] ; then # replace 'vmlinuz' with 'vmlinuz.efi'
+    #~ if [ -e "/sys/firmware/efi/efivars/*" ] ; then # replace 'vmlinuz' with 'vmlinuz.efi'
         #~ log_msg "Converting isolinux.cfg.vesamenu to UEFI boot (vmlinuz.efi)"
         #~ sed -i 's/vmlinuz$/vmlinuz\.efi/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
     #~ else # replace 'vmlinuz.efi' with 'vmlinuz'
@@ -737,11 +777,17 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
         #~ sed -i 's/vmlinuz\.efi$/vmlinuz/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
     #~ fi
     
+    # Forget the above stuff, and have isolinux just point to vmlinuz.efi like this:
+    log_msg "Converting isolinux.cfg.vesamenu to UEFI bootable (vmlinuz.efi)"
+    sed -i 's/vmlinuz$/vmlinuz\.efi/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
+    
+    
     
 
     # check and see if they have a custom isolinux already setup. eg. they copied over
     # the isolinux folder from their original livecd or made a custom one for their distro
-    if [ ! -f /etc/bodhibuilder/customisolinux/isolinux.cfg ] ; then
+    # and get files isohdpfx.bin & isolinux.bin
+    if [ ! -f /etc/bodhibuilder/customisolinux/isolinux.cfg ] ; then # no custom isolinux (bb default)
         log_msg "Creating isolinux setup for the live system"
         ### TEST ###
         find /usr/lib/ -name 'isohdpfx.bin' -exec cp -f {} ${WORKDIR}/ISOTMP/isolinux/ \;
@@ -749,11 +795,11 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
         find /usr/lib/ -name 'isolinux.bin' -exec cp -f {} ${WORKDIR}/ISOTMP/isolinux/ \;
         #find fix for vesamenu.32 provided by Krasimir S. Stefanov <lokiisyourmaster@gmail.com>
         #~ VESAMENU=`find /usr -print0 | grep -FzZ "syslinux/vesamenu.c32"`
-        UBUVERSION=`lsb_release -r | awk '{print$2}' | cut -d. -f1`
-        if [ "${UBUVERSION}" -le "14" ] ; then
+        #~ UBUVERSION=`lsb_release -r | awk '{print$2}' | cut -d. -f1`
+        if [ "${UBUVERSION}" -le 14 ] ; then
           VESAMENU=`find /usr/lib/ -name "vesamenu.c32" | grep "syslinux/vesamenu.c32"`
           cp ${VESAMENU} ${WORKDIR}/ISOTMP/isolinux/
-        elif [ "${UBUVERSION}" -gt "14" ] ; then
+        elif [ "${UBUVERSION}" -gt 14 ] ; then
           #~ case ${ARCH} in
             #~ amd64 )
               #~ VESAMENU=`find /usr/lib/ -name "vesamenu.c32" | grep "efi64/vesamenu.c32"`
@@ -774,7 +820,7 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
         #~ VERSION=`lsb_release -r | awk '{print $2}' | awk -F "." '{print $1}'`
         sed -e 's/__DISTNAME__/'"${DISTNAME}"'/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu > ${WORKDIR}/ISOTMP/isolinux/isolinux.cfg
         cp /etc/bodhibuilder/isolinux/splash.png ${WORKDIR}/ISOTMP/isolinux/splash.png
-    else
+    else # custom isolinux
         log_msg "Copying your custom isolinux setup to the live system"
         cp /etc/bodhibuilder/customisolinux/* ${WORKDIR}/ISOTMP/isolinux/ &> /dev/null
     fi
@@ -1032,7 +1078,7 @@ FOO
         rm -f ${WORKDIR}/ISOTMP/casper/filesystem.squashfs &> /dev/null
     fi
 
-    log_msg "Creating filesystem.squashfs  ...  this will take a while so be patient"
+    log_msg "Creating filesystem.squashfs  ...  this will take a while so please be patient"
 
     REALFOLDERS=""
 
