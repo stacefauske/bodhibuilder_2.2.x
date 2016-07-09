@@ -93,6 +93,10 @@ FOO
 ##### END function helper #####
 
 
+
+# load the bodhibuilder.conf file
+. /etc/bodhibuilder.conf
+
 # If helper or clean is all that's needed, just go ahead and do that
 case $1 in
     backup|-b|dist|-d )
@@ -113,9 +117,6 @@ esac
 
 
 
-# load the bodhibuilder.conf file
-. /etc/bodhibuilder.conf
-
 # Static variables
 ARCH=`archdetect | cut -d/ -f1`
 SUBARCH=`archdetect | cut -d/ -f2`
@@ -135,6 +136,14 @@ else
 fi
 if [ ! -d ${WORKDIR} ] ; then
     mkdir -p ${WORKDIR}
+    if [ ! -d ${WORKDIR} ] ; then
+      echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+      echo "! Could not create the working directory !"
+      echo "!     ${WORKDIR} !"
+      echo "! Exiting                                !"
+      echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+      exit 1
+    fi
 fi
 
 cd ${WORKDIR}
@@ -181,18 +190,21 @@ echo " bodhibuilder version info:" >>${WORKDIR}/bodhibuilder.log
 cat /etc/bodhibuilder/bodhibuilder.version >>${WORKDIR}/bodhibuilder.log
 
 # echo info about system into log file
-echo " System info:"
+echo " System info:" >>${WORKDIR}/bodhibuilder.log
 echo "ARCH = ${ARCH}" >>${WORKDIR}/bodhibuilder.log
 echo "SUBARCH = ${SUBARCH}" >>${WORKDIR}/bodhibuilder.log
 if [ -e "/sys/firmware/efi/efivars/*" ] ; then
-  echo "EFI vars found at /sys/firmware/efi/efivars/"
+  BOOT_FIRMWARE="EFI"
+  echo "EFI vars found in /sys/firmware/efi/efivars/" >>${WORKDIR}/bodhibuilder.log
 else
-  echo "no EFI vars found at /sys/firmware/efi/efivars/"
+  BOOT_FIRMWARE="BIOS"
+  echo "no EFI vars found in /sys/firmware/efi/efivars/" >>${WORKDIR}/bodhibuilder.log
 fi
+echo "BOOT_FIRMWARE = ${BOOT_FIRMWARE}" >>${WORKDIR}/bodhibuilder.log
 echo "UBUVERSION = ${UBUVERSION}  (bb's take on Ubuntu version)" >>${WORKDIR}/bodhibuilder.log
 
-echo " lsb-release info:" >>${WORKDIR}/bodhibuilder.log
-cat ${WORKDIR}/dummysys/etc/lsb-release >>${WORKDIR}/bodhibuilder.log
+echo " System lsb-release info:" >>${WORKDIR}/bodhibuilder.log
+cat /etc/lsb-release >>${WORKDIR}/bodhibuilder.log
 echo "------------------------------------------------------" >>${WORKDIR}/bodhibuilder.log
 echo "" >>${WORKDIR}/bodhibuilder.log
 
@@ -759,7 +771,9 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
 
     # BB EFI BOOT
     # Customize file '/etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu' to point to either
-    # vmlinuz (32b) or vmlinuz.efi (64b) kernel based on the architechture of the system.
+    # vmlinuz (32b/non-UEFI) or vmlinuz.efi (64b/UEFI) kernel based on the architechture of the system.
+    
+    ## ARCH based:
     #~ if [ "${ARCH}" = "amd64" ] ; then # replace 'vmlinuz' with 'vmlinuz.efi'
         #~ log_msg "Converting isolinux.cfg.vesamenu to UEFI bootable (vmlinuz.efi)"
         #~ sed -i 's/vmlinuz$/vmlinuz\.efi/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
@@ -768,18 +782,20 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
         #~ sed -i 's/vmlinuz\.efi$/vmlinuz/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
     #~ fi
     
+    ## BOOT_FIRMWARE based:
     #   ? Base on existence of /sys/firmware/efi/efivars/* files instead so it can be a 32b efi install?
-    #~ if [ -e "/sys/firmware/efi/efivars/*" ] ; then # replace 'vmlinuz' with 'vmlinuz.efi'
-        #~ log_msg "Converting isolinux.cfg.vesamenu to UEFI boot (vmlinuz.efi)"
-        #~ sed -i 's/vmlinuz$/vmlinuz\.efi/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
-    #~ else # replace 'vmlinuz.efi' with 'vmlinuz'
-        #~ log_msg "Converting isolinux.cfg.vesamenu to NON-UEFI boot (vmlinuz)"
-        #~ sed -i 's/vmlinuz\.efi$/vmlinuz/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
-    #~ fi
+    if [ "${BOOT_FIRMWARE}" = "EFI" ] ; then # replace 'vmlinuz' with 'vmlinuz.efi'
+        log_msg "Converting isolinux.cfg.vesamenu to UEFI boot (vmlinuz.efi)"
+        sed -i 's/vmlinuz$/vmlinuz\.efi/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
+    elif [ "${BOOT_FIRMWARE}" = "BIOS" ] ; then # replace 'vmlinuz.efi' with 'vmlinuz'
+        log_msg "Converting isolinux.cfg.vesamenu to NON-UEFI boot (vmlinuz)"
+        sed -i 's/vmlinuz\.efi$/vmlinuz/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
+    fi
     
+    ## Just make it vmlinuz.efi:
     # Forget the above stuff, and have isolinux just point to vmlinuz.efi like this:
-    log_msg "Converting isolinux.cfg.vesamenu to UEFI bootable (vmlinuz.efi)"
-    sed -i 's/vmlinuz$/vmlinuz\.efi/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
+    #~ log_msg "Converting isolinux.cfg.vesamenu to UEFI bootable (vmlinuz.efi)"
+    #~ sed -i 's/vmlinuz$/vmlinuz\.efi/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
     
     
     
@@ -795,7 +811,6 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
         find /usr/lib/ -name 'isolinux.bin' -exec cp -f {} ${WORKDIR}/ISOTMP/isolinux/ \;
         #find fix for vesamenu.32 provided by Krasimir S. Stefanov <lokiisyourmaster@gmail.com>
         #~ VESAMENU=`find /usr -print0 | grep -FzZ "syslinux/vesamenu.c32"`
-        #~ UBUVERSION=`lsb_release -r | awk '{print$2}' | cut -d. -f1`
         if [ "${UBUVERSION}" -le 14 ] ; then
           VESAMENU=`find /usr/lib/ -name "vesamenu.c32" | grep "syslinux/vesamenu.c32"`
           cp ${VESAMENU} ${WORKDIR}/ISOTMP/isolinux/
@@ -1016,13 +1031,21 @@ FOO
     # first check to see if it's 64bit,
     # 64bit needs vmlinuz.efi
     #~ if [ "${ARCH}" = "amd64" ] ; then
-        log_msg "Creating casper/vmlinuz.efi"
+        #~ log_msg "Creating casper/vmlinuz.efi"
         # simply renaming it to vmlinuz.efi hasn't hurt anything so far:
-        cp /boot/vmlinuz-`uname -r` ${WORKDIR}/ISOTMP/casper/vmlinuz.efi
+        #~ cp /boot/vmlinuz-`uname -r` ${WORKDIR}/ISOTMP/casper/vmlinuz.efi
     #~ else
         #~ log_msg "Creating casper/vmlinuz"
         #~ cp /boot/vmlinuz-`uname -r` ${WORKDIR}/ISOTMP/casper/vmlinuz
     #~ fi
+    
+    if [ "${BOOT_FIRMWARE}" = "EFI" ] ; then
+        log_msg "Creating casper/vmlinuz.efi"
+        cp /boot/vmlinuz-`uname -r` ${WORKDIR}/ISOTMP/casper/vmlinuz.efi
+    elif [ "${BOOT_FIRMWARE}" = "BIOS" ] ; then
+        log_msg "Creating casper/vmlinuz"
+        cp /boot/vmlinuz-`uname -r` ${WORKDIR}/ISOTMP/casper/vmlinuz
+    fi
 
 
     # Copy initrd into casper
@@ -1346,9 +1369,9 @@ iso (){
 
     # if file isohdpfx.bin doesn't exist, don't use xorriso
     #~ if [ "${ARCH}" == "amd64" ] ; then
-      #~ if [ ! -f "${WORKDIR}/ISOTMP/ISOLINUX/isohdpfx.bin" ] ; then
+      #~ if [ ! -f "${WORKDIR}/ISOTMP/ISOLINUX/isohdpfx.bin" ] ; then # removed in v2.2.x
       if [ ! -f "${WORKDIR}/ISOTMP/isolinux/isohdpfx.bin" ] ; then
-        #~ log_msg "File '${WORKDIR}/ISOTMP/ISOLINUX/isohdpfx.bin' not found."
+        #~ log_msg "File '${WORKDIR}/ISOTMP/ISOLINUX/isohdpfx.bin' not found." # removed in v2.2.x
         log_msg "File '${WORKDIR}/ISOTMP/isolinux/isohdpfx.bin' not found."
         log_msg "Can't use xorriso."
         CREATEISO="`which genisoimage`"
