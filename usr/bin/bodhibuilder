@@ -784,18 +784,21 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
     
     ## BOOT_FIRMWARE based:
     #   ? Base on existence of /sys/firmware/efi/efivars/* files instead so it can be a 32b efi install?
-    if [ "${BOOT_FIRMWARE}" = "EFI" ] ; then # replace 'vmlinuz' with 'vmlinuz.efi'
-        log_msg "Converting isolinux.cfg.vesamenu to UEFI boot (vmlinuz.efi)"
-        sed -i 's/vmlinuz$/vmlinuz\.efi/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
-    elif [ "${BOOT_FIRMWARE}" = "BIOS" ] ; then # replace 'vmlinuz.efi' with 'vmlinuz'
-        log_msg "Converting isolinux.cfg.vesamenu to NON-UEFI boot (vmlinuz)"
-        sed -i 's/vmlinuz\.efi$/vmlinuz/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
-    fi
+    #~ if [ "${BOOT_FIRMWARE}" = "EFI" ] ; then # replace 'vmlinuz' with 'vmlinuz.efi'
+        #~ log_msg "Converting isolinux.cfg.vesamenu to UEFI boot (vmlinuz.efi)"
+        #~ sed -i 's/vmlinuz$/vmlinuz\.efi/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
+    #~ elif [ "${BOOT_FIRMWARE}" = "BIOS" ] ; then # replace 'vmlinuz.efi' with 'vmlinuz'
+        #~ log_msg "Converting isolinux.cfg.vesamenu to NON-UEFI boot (vmlinuz)"
+        #~ sed -i 's/vmlinuz\.efi$/vmlinuz/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
+    #~ fi
     
     ## Just make it vmlinuz.efi:
+    # (Reason to do this -- /etc/bodhibuilder/uefi/boot/grub/grub.cfg file points to vmlinuz.efi,
+    #  as does /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu, by default. So far, vmlinuz.efi
+    #  has not hurt anything even if it's not a remaster in a UEFI booted system.)
     # Forget the above stuff, and have isolinux just point to vmlinuz.efi like this:
-    #~ log_msg "Converting isolinux.cfg.vesamenu to UEFI bootable (vmlinuz.efi)"
-    #~ sed -i 's/vmlinuz$/vmlinuz\.efi/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
+    log_msg "Ensuring isolinux.cfg.vesamenu is UEFI bootable (vmlinuz.efi)"
+    sed -i 's/vmlinuz$/vmlinuz\.efi/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
     
     
     
@@ -1027,9 +1030,9 @@ FOO
 
 
     log_msg "Copying your kernel and initrd for the livecd"
-    #new
-    # first check to see if it's 64bit,
-    # 64bit needs vmlinuz.efi
+    # new #
+    
+    ## ARCH based:
     #~ if [ "${ARCH}" = "amd64" ] ; then
         #~ log_msg "Creating casper/vmlinuz.efi"
         # simply renaming it to vmlinuz.efi hasn't hurt anything so far:
@@ -1039,13 +1042,22 @@ FOO
         #~ cp /boot/vmlinuz-`uname -r` ${WORKDIR}/ISOTMP/casper/vmlinuz
     #~ fi
     
-    if [ "${BOOT_FIRMWARE}" = "EFI" ] ; then
-        log_msg "Creating casper/vmlinuz.efi"
-        cp /boot/vmlinuz-`uname -r` ${WORKDIR}/ISOTMP/casper/vmlinuz.efi
-    elif [ "${BOOT_FIRMWARE}" = "BIOS" ] ; then
-        log_msg "Creating casper/vmlinuz"
-        cp /boot/vmlinuz-`uname -r` ${WORKDIR}/ISOTMP/casper/vmlinuz
-    fi
+    ## BOOT_FIRMWARE based:
+    #~ if [ "${BOOT_FIRMWARE}" = "EFI" ] ; then
+        #~ log_msg "Creating casper/vmlinuz.efi"
+        #~ cp /boot/vmlinuz-`uname -r` ${WORKDIR}/ISOTMP/casper/vmlinuz.efi
+    #~ elif [ "${BOOT_FIRMWARE}" = "BIOS" ] ; then
+        #~ log_msg "Creating casper/vmlinuz"
+        #~ cp /boot/vmlinuz-`uname -r` ${WORKDIR}/ISOTMP/casper/vmlinuz
+    #~ fi
+    
+    ## Just make it vmlinuz.efi:
+    #   (As stated earlier, so far, vmlinuz.efi has not hurt anything 
+    #    even if it's not a remaster in a UEFI booted system.)
+    log_msg "Creating casper/vmlinuz.efi"
+    cp /boot/vmlinuz-`uname -r` ${WORKDIR}/ISOTMP/casper/vmlinuz.efi
+
+
 
 
     # Copy initrd into casper
@@ -1082,10 +1094,12 @@ FOO
 
     #exit if missing... either vmlinuz or vmlinuz.efi
     if [ ! -f ${WORKDIR}/ISOTMP/casper/vmlinuz.efi ] ; then
-        if [ ! -f ${WORKDIR}/ISOTMP/casper/vmlinuz ] ; then
-            log_msg "Missing valid kernel. Exiting"
-            exit 1
-        fi
+        log_msg "vmlinuz.efi not found in casper. Exiting"
+        exit 1
+        #~ if [ ! -f ${WORKDIR}/ISOTMP/casper/vmlinuz ] ; then
+            #~ log_msg "Missing valid kernel. Exiting"
+            #~ exit 1
+        #~ fi
     fi
 
     #exit if missing... initrd.lz
