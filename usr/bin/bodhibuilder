@@ -58,8 +58,15 @@ Usage of bodhibuilder $BODHIBUILDERVERSION is as follows:
 
    sudo bodhibuilder -b|-c|-d|backup|clean|dist [[custom.iso]|[cdfs]|[iso custom.iso]]
 
+See the file /etc/bodhibuilder.conf for more configuration options.
 
-Examples:
+Add custom repositories and the comments for them to the file 
+   /etc/bodhibuilder/apt/custom_repos
+   and during firstboot of the newly installed OS, this entire file 
+   will be appended to /etc/apt/sources.list.
+
+
+Usage examples:
 
    sudo bodhibuilder backup                (to make a livecd/dvd backup of your system)
    sudo bodhibuilder -b
@@ -82,9 +89,11 @@ Examples:
    cdfs and iso options should only be used if you wish to modify something on the
    cd before the iso is created.  An example of this would be to modify the isolinux
    portion of the livecd/dvd
+   
+   sudo bodhibuilder version               (reports the current version of bodhibuilder)
+   sudo bodhibuilder -v
 
-If you are prompted for a username and password from the live ISO:
-   username = bodhi  (no password)
+   sudo bodhibuilder-gtk                   (use the graphical version of bodhibuilder)
 
    >> Type "Q" at any time to exit this help <<
 
@@ -105,6 +114,10 @@ case $1 in
         echo "Removing the build directory now..."
         rm -rf ${WORKDIR}
         echo "Done...Exiting"
+        exit 0
+    ;;
+    version|-v )
+        echo " bodhibuilder  ${BODHIBUILDERVERSION}"
         exit 0
     ;;
     * )
