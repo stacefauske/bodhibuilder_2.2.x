@@ -1,0 +1,22 @@
+
+#############################################
+# Custom repositories added by bodhibuilder #
+#############################################
+
+# none -- Place custom repositories in this file.
+#         The contents of this entire file will be appended to
+#         '/etc/apt/sources.list' in the final installed OS.
+#
+#         These repositories will not be included in the live ISO.
+#         The live ISO will use the same repos as the system used to create it.
+
+## Bodhi Linux Repository (14.04 - trusty)
+#~ deb http://packages.bodhilinux.com/bodhi trusty main
+
+## Bodhi Linux Repository (16.04 - xenial)
+# inwork
+
+#################################################
+# END Custom repositories added by bodhibuilder #
+#################################################
+

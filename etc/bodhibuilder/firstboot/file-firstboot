@@ -21,18 +21,24 @@ do_start() {
             (sleep 60 && update-rc.d -f bodhibuilder-firstboot remove) &
             sed -i -e 's/root:x:/root:!:/g' /etc/shadow
             rm -rf /home/*/Desktop/ubiquity*.desktop
-            ################################################
-            ### Place your custom commands below this line
-            # Commented out repository for Ubuntu 16.04 testing
-            #~ echo " " >> /etc/apt/sources.list
-            #~ echo "## Bodhi Linux Repository" >> /etc/apt/sources.list
-            #~ echo "deb http://packages.bodhilinux.com/bodhi trusty main" >> /etc/apt/sources.list
-            #~ echo " " >> /etc/apt/sources.list
-            
+            # Add custom repositories to the installed OS
+            cat /etc/bodhibuilder/apt/custom_repos >> /etc/apt/sources.list
+            # Replace OS grub with bodhibuilder's custom grub
             yes | cp -f /etc/default/grub.bodhi /etc/default/grub
             update-grub
+            
+            ################################################
+            ### Place your custom commands below this line
+            
+            # Please add custom repositories and comments for them into the file
+            #   /etc/bodhibuilder/apt/custom_repos
+            # This script will append everything in that file to the
+            # existing /etc/apt/sources.list file
+            
+            
             ### Place your custom commands above this line
             ################################################
+            
             ES=$?
             [ "$VERBOSE" != no ] && log_end_msg $ES
             return $ES

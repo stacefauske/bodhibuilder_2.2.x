@@ -1476,7 +1476,7 @@ iso (){
                   -boot-load-size 4 \
                   -boot-info-table \
                   -eltorito-alt-boot \
-                  -e boot/grub/efi.img \
+                  --efi-boot boot/grub/efi.img \
                   -no-emul-boot \
                   -isohybrid-gpt-basdat \
                   -isohybrid-apm-hfsplus \
@@ -1496,7 +1496,7 @@ iso (){
                   -boot-load-size 4 \
                   -boot-info-table \
                   -eltorito-alt-boot \
-                  -e boot/grub/efi.img \
+                  --efi-boot boot/grub/efi.img \
                   -no-emul-boot \
                   -isohybrid-gpt-basdat \
                   -isohybrid-apm-hfsplus \
