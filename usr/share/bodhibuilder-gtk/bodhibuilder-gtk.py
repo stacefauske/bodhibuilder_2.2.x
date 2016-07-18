@@ -63,7 +63,7 @@ except:
 
 APP = "bodhibuilder"
 DIR = "/usr/share/locale"
-APP_VERSION = "2.2.x"
+APP_VERSION = "2.2.beta-04"
 
 locale.setlocale(locale.LC_ALL, '')
 gettext.bindtextdomain(APP, DIR)

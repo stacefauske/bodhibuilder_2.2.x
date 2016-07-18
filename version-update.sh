@@ -13,10 +13,30 @@ if [ ! "${1}" ] ; then # just echo out the version number
   echo ""
   echo " Current bodhibuilder version is :  ${currversion}"
   echo ""
+  echo " Example to change version :"
+  echo "   ./version-update.sh 2.2.01"
+  echo ""
 else # change version number throughout files
+  echo ""
+  echo "usr/share/bodhibuilder-gtk/bodhibuilder-gtk.py"
+  grep 'APP_VERSION = \".*\"$' ./usr/share/bodhibuilder-gtk/bodhibuilder-gtk.py
+  echo "  changed to"
   sed -i "s/APP_VERSION = \".*\"$/APP_VERSION = \"${1}\"/" ./usr/share/bodhibuilder-gtk/bodhibuilder-gtk.py
+  grep 'APP_VERSION = \".*\"$' ./usr/share/bodhibuilder-gtk/bodhibuilder-gtk.py
+  
+  echo ""
+  echo "etc/bodhibuilder/bodhibuilder.version"
+  grep 'BODHIBUILDERVERSION=\".*\"$' ./etc/bodhibuilder/bodhibuilder.version
+  echo "  changed to"
   sed -i "s/BODHIBUILDERVERSION=\".*\"$/BODHIBUILDERVERSION=\"${1}\"/" ./etc/bodhibuilder/bodhibuilder.version
+  grep 'BODHIBUILDERVERSION=\".*\"$' ./etc/bodhibuilder/bodhibuilder.version
+  
+  echo ""
+  echo "DEBIAN/control"
+  grep 'Version:.*$' ./DEBIAN/control
+  echo "  changed to"
   sed -i "s/Version:.*$/Version: ${1}/" ./DEBIAN/control
+  grep 'Version:.*$' ./DEBIAN/control
 fi
 
 exit 0

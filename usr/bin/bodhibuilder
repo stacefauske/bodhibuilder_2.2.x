@@ -1198,10 +1198,10 @@ FOO
     # set the mksquashfs command
     case ${OPT1} in
       backup )
-        squashcmd="mksquashfs ${REALFOLDERS} ${WORKDIR}/ISOTMP/casper/filesystem.squashfs ${SQUASHFSOPTS} -e root/.local/Trash root/.thumbnails root/.cache root/.bash_history root/.lesshst root/.nano_history boot/grub ${BASEWORKDIR} ${EXCLUDES} 2>>${WORKDIR}/bodhibuilder.log"
+        squashcmd="mksquashfs ${REALFOLDERS} ${WORKDIR}/ISOTMP/casper/filesystem.squashfs ${SQUASHFSOPTS} -e root/.local/Trash root/.thumbnails root/.cache root/.bash_history root/.lesshst root/.nano_history /boot/grub /usr/share/applications/bodhibuilder-gtk.desktop ${BASEWORKDIR} ${EXCLUDEICONS} ${EXCLUDELOCALES} ${EXCLUDES} 2>>${WORKDIR}/bodhibuilder.log"
       ;;
       * )
-        squashcmd="mksquashfs ${REALFOLDERS} ${WORKDIR}/ISOTMP/casper/filesystem.squashfs ${SQUASHFSOPTS} -e root/.local/Trash root/.thumbnails root/.cache root/.bash_history root/.lesshst root/.nano_history /boot/grub ${BASEWORKDIR} ${EXCLUDEICONS} ${EXCLUDELOCALES} ${EXCLUDES} 2>>${WORKDIR}/bodhibuilder.log"
+        squashcmd="mksquashfs ${REALFOLDERS} ${WORKDIR}/ISOTMP/casper/filesystem.squashfs ${SQUASHFSOPTS} -e root/.local/Trash root/.thumbnails root/.cache root/.bash_history root/.lesshst root/.nano_history /boot/grub /usr/share/applications/bodhibuilder-gtk.desktop ${BASEWORKDIR} ${EXCLUDEICONS} ${EXCLUDELOCALES} ${EXCLUDES} 2>>${WORKDIR}/bodhibuilder.log"
       ;;
     esac
     echo "mksquashfs command:" >>${WORKDIR}/bodhibuilder.log
@@ -1551,7 +1551,7 @@ iso (){
             log_msg "    $ sudo xorrecord dev=/dev/sr0 speed=12 fs=8m blank=as_needed -eject padsize=300k ${WORKDIR}/${CUSTOMISO}"
             log_msg "  *Create a bootable USB:"
             log_msg "   (you will need to determine which device your USB has been assigned,"
-            log_msg "   DO NOT copy & paste this command directly without changing '/dev/sdX'."
+            log_msg "   Do not copy & paste this command directly without changing '/dev/sdX', it won't work."
             log_msg "   dd CAN be dangerous ... now you've been warned.)"
             log_msg "    $ sudo dd if=${WORKDIR}/${CUSTOMISO} of=/dev/sdX"
             log_msg ""
