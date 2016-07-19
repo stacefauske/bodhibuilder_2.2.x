@@ -14,7 +14,7 @@ if [ ! "${1}" ] ; then # just echo out the version number
   echo " Current bodhibuilder version is :  ${currversion}"
   echo ""
   echo " Example to change version :"
-  echo "   ./version-update.sh 2.2.01"
+  echo "   sudo ./version-update.sh 2.2.nn"
   echo ""
 else # change version number throughout files
   echo ""
