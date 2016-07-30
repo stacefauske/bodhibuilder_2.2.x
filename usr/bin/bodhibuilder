@@ -639,8 +639,8 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
 
     # copy over some of the necessary stuff for the livecd
 
-    #check if system has UEFI data to move over
-    if [ -d /etc/bodhibuilder/uefi ] ; then # Do we need to check for this folder just to download new packages?
+    #~ #check if system has UEFI data to move over
+    #~ if [ -d /etc/bodhibuilder/uefi ] ; then # Do we need to check for this folder just to download new packages?
       log_msg "Checking internet connection..."
       netconnstatus=`dig | grep -o 'Got answer'` # report if ANY network hardware is connected
       if [ "${netconnstatus}" ] ; then
@@ -760,10 +760,10 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
         log_msg "no new deb files being copied into pool so as to maintain compatibility"
       fi
       
-    else
-      log_msg "No UEFI folder found at  /etc/bodhibuilder/uefi/"
-      log_msg "This ISO may not be UEFI bootable."
-    fi
+    #~ else
+      #~ log_msg "No UEFI folder found at  /etc/bodhibuilder/uefi/"
+      #~ log_msg "This ISO may not be UEFI bootable."
+    #~ fi
 
     # Creating a repository for the Ubiquity install
     #~ if [ "${ARCH}" = "amd64" ] ; then
@@ -783,8 +783,7 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
     cp /boot/memtest86+.bin ${WORKDIR}/ISOTMP/install/memtest
 
     # BB EFI BOOT
-    # Customize file '/etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu' to point to either
-    # vmlinuz (32b/non-UEFI) or vmlinuz.efi (64b/UEFI) kernel based on the architechture of the system.
+    # Customize file '/etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu' to point to vmlinuz.efi
     
     ## ARCH based:
     #~ if [ "${ARCH}" = "amd64" ] ; then # replace 'vmlinuz' with 'vmlinuz.efi'
@@ -812,9 +811,9 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
     # Forget the above stuff, and have isolinux just point to vmlinuz.efi like this:
     log_msg "Ensuring isolinux.cfg.vesamenu is UEFI bootable (vmlinuz.efi)"
     sed -i 's/vmlinuz$/vmlinuz\.efi/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu
-    
-    
-    
+
+
+
 
     # check and see if they have a custom isolinux already setup. eg. they copied over
     # the isolinux folder from their original livecd or made a custom one for their distro
