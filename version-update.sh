@@ -37,6 +37,10 @@ else # change version number throughout files
   echo "  changed to"
   sed -i "s/Version:.*$/Version: ${1}/" ./DEBIAN/control
   grep 'Version:.*$' ./DEBIAN/control
+  
+  currversion=`cat ./etc/bodhibuilder/bodhibuilder.version | cut -d\" -f2`
+  echo ""
+  echo " NEW bodhibuilder version is :  ${currversion}"
 fi
 
 exit 0
