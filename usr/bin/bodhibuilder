@@ -675,10 +675,10 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
         
         # packages to be downloaded and moved into pool: -- 32/64-bit -- ONE directory
         if [ "${UBUVERSION}" -le 14 ] ; then
-          dlpkg_32="efibootmgr grub grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-ia32 grub-efi-ia32-bin grub-pc-bin grub2-common secureboot-db b43-fwcutter bcmwl-kernel-source dkms fakeroot grub-pc libfakeroot libuniconf4.6 libwvstreams4.6-base libwvstreams4.6-extras lupin-support mouseemu oem-config oem-config-gtk oem-config-slideshow-ubuntu setserial user-setup wvdial" # 32-bit packages
+          dlpkg_32="b43-fwcutter bcmwl-kernel-source dkms efibootmgr fakeroot grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-ia32 grub-efi-ia32-bin grub-pc grub-pc-bin grub2-common libfakeroot libuniconf4.6 libwvstreams4.6-base libwvstreams4.6-extras lupin-support mouseemu oem-config oem-config-gtk oem-config-slideshow-ubuntu secureboot-db setserial user-setup wvdial" # 32-bit packages
           dlpkg_64="grub-efi-amd64-signed shim shim-signed" # 64-bit packages
         else
-          dlpkg_32="efibootmgr grub grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-ia32 grub-efi-ia32-bin grub-pc-bin grub2-common secureboot-db b43-fwcutter bcmwl-kernel-source dkms fakeroot grub-pc libfakeroot libuniconf4.6 libwvstreams4.6-base libwvstreams4.6-extras lupin-support mokutil mouseemu oem-config oem-config-gtk oem-config-slideshow-ubuntu setserial user-setup wvdial sbsigntool" # 32-bit packages
+          dlpkg_32="b43-fwcutter bcmwl-kernel-source dkms efibootmgr fakeroot grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-ia32 grub-efi-ia32-bin grub-pc grub-pc-bin grub2-common libfakeroot libuniconf4.6 libwvstreams4.6-base libwvstreams4.6-extras lupin-support mokutil mouseemu oem-config oem-config-gtk oem-config-slideshow-ubuntu sbsigntool secureboot-db setserial user-setup wvdial" # 32-bit packages
           dlpkg_64="grub-efi-amd64-signed shim shim-signed" # 64-bit packages
         fi
         case ${ARCH} in
