@@ -723,26 +723,16 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
         log_msg "...not downloading latest uefi pool debs"
         dlpkgpass="0"
       fi
-      
-      #~ # Get isohdpfx.bin & isolinux.bin from the distribution so we have their latest rev's
-      #~ log_msg "Gathering latest files:"
-      #~ log_msg "  isohdpfx.bin"
-      #~ pathisohdpfx=`find /usr/lib/ -name isohdpfx.bin | head -1`
-      #~ if [ -e "${pathisohdpfx}" ] ; then
-        #~ bbisohdpfx="/etc/bodhibuilder/uefi/ISOLINUX/isohdpfx.bin"
-        #~ cp -vn ${bbisohdpfx} ${bbisohdpfx}_0RIG # Make backup of original
-        #~ cp -vf ${pathisohdpfx} ${bbisohdpfx} # Copy in new file
-      #~ fi
-      #~ log_msg "  isolinux.bin"
-      #~ pathisolinux=`find /usr/lib/ -name isolinux.bin | head -1`
-      #~ if [ -e "${pathisolinux}" ] ; then
-        #~ bbisolinux="/etc/bodhibuilder/uefi/ISOLINUX/isolinux.bin"
-        #~ cp -vn ${bbisolinux} ${bbisolinux}_0RIG # Make backup of original
-        #~ cp -vf ${pathisolinux} ${bbisolinux} # Copy in new file
-      #~ fi
-      
+      log_msg "Copying arch-specific debs into pool"
+      if [ "${ARCH}" = "amd64" ] ; then
+        echo "64-bit arch detected" >>${WORKDIR}/bodhibuilder.log
+        cp -av /etc/bodhibuilder/debs/amd64/* /etc/bodhibuilder/uefi/pool/ >>${WORKDIR}/bodhibuilder.log
+      else
+        echo "32-bit arch detected" >>${WORKDIR}/bodhibuilder.log
+        cp -av /etc/bodhibuilder/debs/i386/* /etc/bodhibuilder/uefi/pool/ >>${WORKDIR}/bodhibuilder.log
+      fi
       log_msg "Moving all EFI files to the ISOTMP folder"
-      cp -a /etc/bodhibuilder/uefi/* ${WORKDIR}/ISOTMP/
+      cp -av /etc/bodhibuilder/uefi/* ${WORKDIR}/ISOTMP/ >>${WORKDIR}/bodhibuilder.log
       
       # Add custom DISTNAME to UEFI grub
       sed -i 's/__DISTNAME__/'"${DISTNAME}"'/g' ${WORKDIR}/ISOTMP/boot/grub/grub.cfg
@@ -820,9 +810,7 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
     # and get files isohdpfx.bin & isolinux.bin
     if [ ! -f /etc/bodhibuilder/customisolinux/isolinux.cfg ] ; then # no custom isolinux (bb default)
         log_msg "Creating isolinux setup for the live system"
-        ### TEST ###
         find /usr/lib/ -name 'isohdpfx.bin' -exec cp -f {} ${WORKDIR}/ISOTMP/isolinux/ \;
-        ### END TEST ###
         find /usr/lib/ -name 'isolinux.bin' -exec cp -f {} ${WORKDIR}/ISOTMP/isolinux/ \;
         #find fix for vesamenu.32 provided by Krasimir S. Stefanov <lokiisyourmaster@gmail.com>
         #~ VESAMENU=`find /usr -print0 | grep -FzZ "syslinux/vesamenu.c32"`
@@ -845,7 +833,6 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
             cp ${c} ${WORKDIR}/ISOTMP/isolinux/
           done
         fi
-        #~ cp ${VESAMENU} ${WORKDIR}/ISOTMP/isolinux/
         # setup isolinux for the livecd
         #~ VERSION=`lsb_release -r | awk '{print $2}' | awk -F "." '{print $1}'`
         sed -e 's/__DISTNAME__/'"${DISTNAME}"'/g' /etc/bodhibuilder/isolinux/isolinux.cfg.vesamenu > ${WORKDIR}/ISOTMP/isolinux/isolinux.cfg

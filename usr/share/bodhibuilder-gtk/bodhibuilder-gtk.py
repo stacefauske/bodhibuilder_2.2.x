@@ -63,7 +63,7 @@ except:
 
 APP = "bodhibuilder"
 DIR = "/usr/share/locale"
-APP_VERSION = "2.2.beta-06"
+APP_VERSION = "2.2.beta-07"
 
 locale.setlocale(locale.LC_ALL, '')
 gettext.bindtextdomain(APP, DIR)
@@ -71,6 +71,7 @@ gettext.textdomain(APP)
 _ = gettext.gettext
 
 LOCALE = locale.getlocale()[0]
+
 
 class appgui:
     def __init__(self):
