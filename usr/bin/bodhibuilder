@@ -182,12 +182,6 @@ log_msg() {
     echo "$1" >>${WORKDIR}/bodhibuilder.log
 }
 
-# TODO - Create function to execute cmd, then log output
-#~ log_do() {
-  #~ echo "$1" >>${WORKDIR}/bodhibuilder.log
-  #~ eval "$1" | tee -a ${WORKDIR}/bodhibuilder.log
-#~ }
-
 
 # what kind of disk space are we dealing with to begin?
 echo "------------------------------------------------------" >>${WORKDIR}/bodhibuilder.log
@@ -264,23 +258,6 @@ else
     echo "BACKUPSHOWINSTALL incorrect, using default of 1" >>${WORKDIR}/bodhibuilder.log
     BACKUPSHOWINSTALL="1"
 fi
-
-
-# put custom repositories into firstboot file so they will be entered into sources.list
-#   firstboot file = /etc/bodhibuilder/firstboot/file-firstboot
-### INWORK ###
-#~ if [ "${SYSREPOS}" ] ; then
-  #~ repochk=1
-  #~ repono="0"
-  #~ until [ ${repochk} -eq 0 ] ; do
-    #~ repono="$((repono + 1))"
-    #~ repo${repono}=`echo ${SYSREPOS} | cut -d\| -f${repono} | sed -e 's/^ //'`
-    #~ if [ ! "${repo}${repono}" ] ; then
-      #~ repochk=0
-    #~ fi
-  #~ done
-  #~ log_msg "Number of repositories to add to sources.list:  ${repono}" 
-#~ fi
 
 
 
@@ -749,20 +726,13 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
       else # unsuccessful downloads
         log_msg "no new deb files being copied into pool so as to maintain compatibility"
       fi
-      
-    #~ else
-      #~ log_msg "No UEFI folder found at  /etc/bodhibuilder/uefi/"
-      #~ log_msg "This ISO may not be UEFI bootable."
-    #~ fi
 
     # Creating a repository for the Ubiquity install
-    #~ if [ "${ARCH}" = "amd64" ] ; then
-      log_msg "Creating a Packages.gz repository for the Ubiquity install"
-      rm -f ${WORKDIR}/ISOTMP/dists/Packages.gz
-      cd ${WORKDIR}/ISOTMP/
-      dpkg-scanpackages pool /dev/null 2>>${WORKDIR}/bodhibuilder.log | gzip -9c > ./dists/Packages.gz
-      cd -
-    #~ fi
+    log_msg "Creating a Packages.gz repository for the Ubiquity install"
+    rm -f ${WORKDIR}/ISOTMP/dists/Packages.gz
+    cd ${WORKDIR}/ISOTMP/
+    dpkg-scanpackages pool /dev/null 2>>${WORKDIR}/bodhibuilder.log | gzip -9c > ./dists/Packages.gz
+    cd -
 
     #copy any preseed files
     log_msg "Copying any preseed files"
@@ -864,7 +834,6 @@ FOO
     # May need to make change below on 'dpkg-query' line because 'version' var is not assigned earlier
     # As a note I changed VERSION var to UBUVERSION earlier in script (note all CAPS) :
     dpkg-query -W --showformat='${Package} ${Version}\n' > ${WORKDIR}/ISOTMP/casper/filesystem.manifest
-    #~ dpkg-query -W --showformat='${Package} ${UBUVERSION}\n' > ${WORKDIR}/ISOTMP/casper/filesystem.manifest
     cp ${WORKDIR}/ISOTMP/casper/filesystem.manifest ${WORKDIR}/ISOTMP/casper/filesystem.manifest-desktop
 
     # Suggested by lkjoel from Ubuntu Forums - Joel Leclerc to remove the frontend so the Install menu item is not on the installed system
@@ -1010,15 +979,7 @@ FOO
     fi
     rm -f /usr/share/ubiquity/apt-setup &> /dev/null
     cp -f /etc/bodhibuilder/ubiquity/apt-setup.* /usr/share/ubiquity/
-    #~ case ${ARCH} in
-      #~ amd64 )
-        cp -f /etc/bodhibuilder/ubiquity/apt-setup.bb /usr/share/ubiquity/apt-setup # pre-configured apt-setup for bodhibuilder
-      #~ ;;
-      #~ * )
-        #~ ##~ cp -f /etc/bodhibuilder/ubiquity/apt-setup.32b /usr/share/ubiquity/apt-setup # pre-configured apt-setup with '#do nothing' for 32-bit
-        #~ ##~ cp -f /etc/bodhibuilder/ubiquity/apt-setup.nothing /usr/share/ubiquity/apt-setup # pre-configured apt-setup with '#do nothing' for 32-bit
-      #~ ;;
-    #~ esac
+    cp -f /etc/bodhibuilder/ubiquity/apt-setup.bb /usr/share/ubiquity/apt-setup # pre-configured apt-setup for bodhibuilder
     chmod 755 /usr/share/ubiquity/apt-setup
 
 
@@ -1095,10 +1056,6 @@ FOO
     if [ ! -f ${WORKDIR}/ISOTMP/casper/vmlinuz.efi ] ; then
         log_msg "vmlinuz.efi not found in casper. Exiting"
         exit 1
-        #~ if [ ! -f ${WORKDIR}/ISOTMP/casper/vmlinuz ] ; then
-            #~ log_msg "Missing valid kernel. Exiting"
-            #~ exit 1
-        #~ fi
     fi
 
     #exit if missing... initrd.lz
@@ -1381,10 +1338,7 @@ iso (){
 
 
     # if file isohdpfx.bin doesn't exist, don't use xorriso
-    #~ if [ "${ARCH}" == "amd64" ] ; then
-      #~ if [ ! -f "${WORKDIR}/ISOTMP/ISOLINUX/isohdpfx.bin" ] ; then # removed in v2.2.x
       if [ ! -f "${WORKDIR}/ISOTMP/isolinux/isohdpfx.bin" ] ; then
-        #~ log_msg "File '${WORKDIR}/ISOTMP/ISOLINUX/isohdpfx.bin' not found." # removed in v2.2.x
         log_msg "File '${WORKDIR}/ISOTMP/isolinux/isohdpfx.bin' not found."
         log_msg "Can't use xorriso."
         CREATEISO="`which genisoimage`"
@@ -1400,7 +1354,6 @@ iso (){
           ;;
         esac
       fi
-    #~ fi
 
     # set ISO creation command based on architecture
     # and then create the ISO
