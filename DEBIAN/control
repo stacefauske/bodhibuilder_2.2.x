@@ -3,7 +3,7 @@ Priority: optional
 Section: main
 Maintainer: Jeff Hoogland, Stace Fauske & Charles van de Beek
 Architecture: all
-Version: 2.2.beta-07
+Version: 2.2.1
 Depends: memtest86+, coreutils, dialog, mkisofs, dpkg-dev | genisoimage, findutils, bash, passwd, sed, squashfs-tools, casper, rsync, mount, eject, libdebian-installer4, os-prober, ubiquity-frontend-debconf, user-setup, discover | discover1, laptop-detect, syslinux, syslinux-utils, util-linux, python, python-glade2, python-vte, plymouth-x11, menu, xorriso, mokutil, sbsigntool
 Recommends: 
 Conflicts: remastersys, remastersys-gtk
