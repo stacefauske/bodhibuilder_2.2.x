@@ -26,19 +26,12 @@ label check
   kernel /casper/vmlinuz.efi
   append  boot=casper integrity-check initrd=/casper/initrd.lz quiet splash --
 
-### Removing this option in BB_2.2.x
-#
-#   this works on live USB
-#
-#~ label hd
-#~   menu label hd - boot the first hard disk
-#~   localboot 0x80
-#~   append -
-#
-#
-#   this works in VirtualBox
-#
-#~ label hd
-#~   menu label hd - boot the first hard disk in VirtualBox
-#~   kernel chain.c32
-#~   append hd0 0
+label hd
+  menu label hd - boot the first hard disk
+  localboot 0x80
+  append -
+
+label hdVB
+  menu label hd - boot first hard disk (VirtualBox)
+  kernel chain.c32
+  append hd0 0
