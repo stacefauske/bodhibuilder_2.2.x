@@ -32,6 +32,6 @@ label hd
   append -
 
 label hdVB
-  menu label hd - boot first hard disk (VirtualBox)
+  menu label hdVB - boot first hard disk (VirtualBox)
   kernel chain.c32
   append hd0 0

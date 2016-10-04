@@ -719,7 +719,7 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
       #   (still working in dlpkgtempdir if dlpkgpass == 1)
       if [ "${dlpkgpass}" == "1" ] ; then # successful downloads
         log_msg "moving deb files into pool"
-        rm -f ${WORKDIR}/ISOTMP/pool/*
+        rm -rf ${WORKDIR}/ISOTMP/pool/*
         mv ./* ${WORKDIR}/ISOTMP/pool/ # mv all new files from dlpkgpass into pool
         cd -
         rm -rf ./dlpkgtempdir
