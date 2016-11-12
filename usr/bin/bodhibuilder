@@ -616,118 +616,118 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
 
     # copy over some of the necessary stuff for the livecd
 
-    #~ #check if system has UEFI data to move over
-    #~ if [ -d /etc/bodhibuilder/uefi ] ; then # Do we need to check for this folder just to download new packages?
-      log_msg "Checking internet connection..."
-      netconnstatus=`dig | grep -o 'Got answer'` # report if ANY network hardware is connected
-      if [ "${netconnstatus}" ] ; then
-        #~ inetstatus=`wget -q --tries=10 --timeout=20 --spider http://ubuntu.com; echo $?`
-        inetstatus=`wget -q --timeout=20 --spider www.ubuntu.com; echo $?`
-        if [ "${inetstatus}" -ne 0 ] ; then # if above failed, do a double-check with google
-          log_msg "   Could not connect to www.ubuntu.com"
-          inetstatus=`wget -q --timeout=20 --spider www.google.com; echo $?`
-          if [ "${inetstatus}" -ne 0 ] ; then # if above failed, do a triple-check with cisco
-          log_msg "   Could not connect to www.google.com"
-            inetstatus=`wget -q --timeout=20 --spider www.cisco.com; echo $?`
-            if [ "${inetstatus}" -ne 0 ] ; then # Internet connectivity fail
-             log_msg "   Could not connect to www.cisco.com"
-            fi
+    log_msg "Checking internet connection..."
+    netconnstatus=`dig | grep -o 'Got answer'` # report if ANY network hardware is connected
+    if [ "${netconnstatus}" ] ; then
+      #~ inetstatus=`wget -q --tries=10 --timeout=20 --spider http://ubuntu.com; echo $?`
+      inetstatus=`wget -q --timeout=20 --spider www.ubuntu.com; echo $?`
+      if [ "${inetstatus}" -ne 0 ] ; then # if above failed, do a double-check with google
+        log_msg "   Could not connect to www.ubuntu.com"
+        inetstatus=`wget -q --timeout=20 --spider www.google.com; echo $?`
+        if [ "${inetstatus}" -ne 0 ] ; then # if above failed, do a triple-check with cisco
+        log_msg "   Could not connect to www.google.com"
+          inetstatus=`wget -q --timeout=20 --spider www.cisco.com; echo $?`
+          if [ "${inetstatus}" -ne 0 ] ; then # Internet connectivity fail
+           log_msg "   Could not connect to www.cisco.com"
           fi
         fi
-      else # no hardware is connected
-        inetstatus=1 # set to 1 to skip downloading of deb packages
       fi
-      if [ "${inetstatus}" -eq 0 ] ; then # internet connection detected
-        log_msg "connection to internet detected"
-        # make sure apt-get cache is updated, or it might try to download the wrong version
-        log_msg "Updating repos"
-        apt-get update >>${WORKDIR}/bodhibuilder.log
-        log_msg "Installing dpkg-dev if it's not already installed"
-        apt-get install -y -q --no-install-recommends dpkg-dev >>${WORKDIR}/bodhibuilder.log #CHARLES
-        if [ "${UBUVERSION}" -gt 14 ] ; then
-          log_msg "Installing isolinux"
-          apt-get install isolinux
-        fi
-        
-        
-        # packages to be downloaded and moved into pool: -- 32/64-bit -- ONE directory
-        if [ "${UBUVERSION}" -le 14 ] ; then
-          dlpkg_32="b43-fwcutter bcmwl-kernel-source dkms efibootmgr fakeroot grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-ia32 grub-efi-ia32-bin grub-pc grub-pc-bin grub2-common libfakeroot libuniconf4.6 libwvstreams4.6-base libwvstreams4.6-extras lupin-support mouseemu oem-config oem-config-gtk oem-config-slideshow-ubuntu secureboot-db setserial user-setup wvdial" # 32-bit packages
-          dlpkg_64="grub-efi-amd64-signed shim shim-signed" # 64-bit packages
-        else
-          dlpkg_32="b43-fwcutter bcmwl-kernel-source dkms efibootmgr fakeroot grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-ia32 grub-efi-ia32-bin grub-pc grub-pc-bin grub2-common libfakeroot libuniconf4.6 libwvstreams4.6-base libwvstreams4.6-extras lupin-support mokutil mouseemu oem-config oem-config-gtk oem-config-slideshow-ubuntu sbsigntool secureboot-db setserial user-setup wvdial" # 32-bit packages
-          dlpkg_64="grub-efi-amd64-signed shim shim-signed" # 64-bit packages
-        fi
-        case ${ARCH} in
-          amd64 )
-            dlpkg_all="${dlpkg_32} ${dlpkg_64}"
-          ;;
-          * )
-            dlpkg_all="${dlpkg_32}"
-          ;;
-        esac
-        
-        log_msg "  downloading latest deb files for ${ARCH} packages:"
-        log_msg "${dlpkg_all}"
-        cd ${WORKDIR}
-        mkdir dlpkgtempdir
-        cd dlpkgtempdir
-        
-        # download pkgs
-        apt-get download ${dlpkg_all} | tee -a ${WORKDIR}/bodhibuilder.log
-        chmod 755 ./* # still working in dlpkgtempdir
-        
-        # make sure ALL files were successfully downloaded
-        dlpkgpass="1"
-        for dlpkgchk in ${dlpkg_all} ; do
-          if [ ! -e ./${dlpkgchk}_* ] ; then
-            dlpkgpass="0"
-            echo "file ${dlpkgchk}_(Some.New.Rev.Num)  -  does NOT exist." >>${WORKDIR}/bodhibuilder.log
-          else
-            dlpkgchkname=`ls -b ./${dlpkgchk}_*`
-            echo "file ${dlpkgchkname} exists" >>${WORKDIR}/bodhibuilder.log
-          fi
-        done
-        
-        if [ "${dlpkgpass}" = "0" ] ; then # Didn't get all files downloaded
-          cd -
-          rm -rf ./dlpkgtempdir
-        fi
-
-
-      else # no internet connection detected
-        log_msg "no connection to internet detected"
-        log_msg "...not downloading latest uefi pool debs"
-        dlpkgpass="0"
+    else # no hardware is connected
+      inetstatus=1 # set to 1 to skip downloading of deb packages
+    fi
+    if [ "${inetstatus}" -eq 0 ] ; then # internet connection detected
+      log_msg "connection to internet detected"
+      # make sure apt-get cache is updated, or it might try to download the wrong version
+      log_msg "Updating repos"
+      apt-get update >>${WORKDIR}/bodhibuilder.log
+      log_msg "Installing dpkg-dev if it's not already installed"
+      apt-get install -y -q --no-install-recommends dpkg-dev >>${WORKDIR}/bodhibuilder.log #CHARLES
+      if [ "${UBUVERSION}" -gt 14 ] ; then
+        log_msg "Installing isolinux"
+        apt-get install isolinux
       fi
-      log_msg "Copying arch-specific debs into pool"
-      if [ "${ARCH}" = "amd64" ] ; then
-        echo "64-bit arch detected" >>${WORKDIR}/bodhibuilder.log
-        cp -av /etc/bodhibuilder/debs/amd64/* /etc/bodhibuilder/uefi/pool/ >>${WORKDIR}/bodhibuilder.log
+      
+      
+      # packages to be downloaded and moved into pool: -- 32/64-bit -- ONE directory
+      if [ "${UBUVERSION}" -le 14 ] ; then
+        dlpkg_32="b43-fwcutter bcmwl-kernel-source dkms efibootmgr fakeroot grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-ia32 grub-efi-ia32-bin grub-pc grub-pc-bin grub2-common libfakeroot libuniconf4.6 libwvstreams4.6-base libwvstreams4.6-extras lupin-support mouseemu oem-config oem-config-gtk oem-config-slideshow-ubuntu secureboot-db setserial user-setup wvdial" # 32-bit packages
+        dlpkg_64="grub-efi-amd64-signed shim shim-signed" # 64-bit packages
       else
-        echo "32-bit arch detected" >>${WORKDIR}/bodhibuilder.log
-        cp -av /etc/bodhibuilder/debs/i386/* /etc/bodhibuilder/uefi/pool/ >>${WORKDIR}/bodhibuilder.log
+        dlpkg_32="b43-fwcutter bcmwl-kernel-source dkms efibootmgr fakeroot grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-ia32 grub-efi-ia32-bin grub-pc grub-pc-bin grub2-common libfakeroot libuniconf4.6 libwvstreams4.6-base libwvstreams4.6-extras lupin-support mokutil mouseemu oem-config oem-config-gtk oem-config-slideshow-ubuntu sbsigntool secureboot-db setserial user-setup wvdial" # 32-bit packages
+        dlpkg_64="grub-efi-amd64-signed shim shim-signed" # 64-bit packages
       fi
-      log_msg "Moving all EFI files to the ISOTMP folder"
-      cp -av /etc/bodhibuilder/uefi/* ${WORKDIR}/ISOTMP/ >>${WORKDIR}/bodhibuilder.log
+      case ${ARCH} in
+        amd64 )
+          dlpkg_all="${dlpkg_32} ${dlpkg_64}"
+        ;;
+        * )
+          dlpkg_all="${dlpkg_32}"
+        ;;
+      esac
       
-      # Add custom DISTNAME to UEFI grub
-      sed -i 's/__DISTNAME__/'"${DISTNAME}"'/g' ${WORKDIR}/ISOTMP/boot/grub/grub.cfg
+      log_msg "  downloading latest deb files for ${ARCH} packages:"
+      log_msg "${dlpkg_all}"
+      cd ${WORKDIR}
+      mkdir dlpkgtempdir
+      cd dlpkgtempdir
       
-      # now move deb files section if all have successfully downloaded:
-      #  in the above step, the pool dir is copied into ISOTMP
-      #   (still working in dlpkgtempdir if dlpkgpass == 1)
-      if [ "${dlpkgpass}" == "1" ] ; then # successful downloads
-        log_msg "moving deb files into pool"
-        rm -rf ${WORKDIR}/ISOTMP/pool/*
-        mv ./* ${WORKDIR}/ISOTMP/pool/ # mv all new files from dlpkgpass into pool
+      # download pkgs
+      apt-get download ${dlpkg_all} | tee -a ${WORKDIR}/bodhibuilder.log
+      chmod 755 ./* # still working in dlpkgtempdir
+      
+      # make sure ALL files were successfully downloaded
+      dlpkgpass="1"
+      for dlpkgchk in ${dlpkg_all} ; do
+        if [ ! -e ./${dlpkgchk}_* ] ; then
+          dlpkgpass="0"
+          echo "file ${dlpkgchk}_(Some.New.Rev.Num)  -  does NOT exist." >>${WORKDIR}/bodhibuilder.log
+        else
+          dlpkgchkname=`ls -b ./${dlpkgchk}_*`
+          echo "file ${dlpkgchkname} exists" >>${WORKDIR}/bodhibuilder.log
+        fi
+      done
+      
+      if [ "${dlpkgpass}" = "0" ] ; then # Didn't get all files downloaded
         cd -
         rm -rf ./dlpkgtempdir
-      else # unsuccessful downloads
-        log_msg "no new deb files being copied into pool so as to maintain compatibility"
       fi
 
+
+    else # no internet connection detected
+      log_msg "no connection to internet detected"
+      log_msg "...not downloading latest uefi pool debs"
+      dlpkgpass="0"
+    fi
+    log_msg "Copying arch-specific debs into pool"
+    if [ "${ARCH}" = "amd64" ] ; then
+      echo "64-bit arch detected" >>${WORKDIR}/bodhibuilder.log
+      cp -av /etc/bodhibuilder/debs/amd64/* /etc/bodhibuilder/uefi/pool/ >>${WORKDIR}/bodhibuilder.log
+    else
+      echo "32-bit arch detected" >>${WORKDIR}/bodhibuilder.log
+      cp -av /etc/bodhibuilder/debs/i386/* /etc/bodhibuilder/uefi/pool/ >>${WORKDIR}/bodhibuilder.log
+    fi
+    log_msg "Moving all EFI files to the ISOTMP folder"
+    cp -av /etc/bodhibuilder/uefi/* ${WORKDIR}/ISOTMP/ >>${WORKDIR}/bodhibuilder.log
+    
+    # Add custom DISTNAME to UEFI grub
+    sed -i 's/__DISTNAME__/'"${DISTNAME}"'/g' ${WORKDIR}/ISOTMP/boot/grub/grub.cfg
+    
+    # now move deb files section if all have successfully downloaded:
+    #  in the above step, the pool dir is copied into ISOTMP
+    #   (still working in dlpkgtempdir if dlpkgpass == 1)
+    if [ "${dlpkgpass}" == "1" ] ; then # successful downloads
+      log_msg "moving deb files into pool"
+      rm -rf ${WORKDIR}/ISOTMP/pool/*
+      mv ./* ${WORKDIR}/ISOTMP/pool/ # mv all new files from dlpkgpass into pool
+      cd -
+      rm -rf ./dlpkgtempdir
+    else # unsuccessful downloads
+      log_msg "no new deb files being copied into pool so as to maintain compatibility"
+    fi
+
     # Creating a repository for the Ubiquity install
+    #  Note: in order for this to work correctly, the source system
+    #        must be completely upgraded, as in 'apt-get dist-upgrade'
     log_msg "Creating a Packages.gz repository for the Ubiquity install"
     rm -f ${WORKDIR}/ISOTMP/dists/Packages.gz
     cd ${WORKDIR}/ISOTMP/
