@@ -20,8 +20,11 @@ do_start() {
             # Removes this script from boot:
             (sleep 60 && update-rc.d -f bodhibuilder-firstboot remove) &
             sed -i -e 's/root:x:/root:!:/g' /etc/shadow
-            # Remove ubiquity icon from desktop
-            rm -rf /home/*/Desktop/ubiquity*.desktop
+            ## Ubiquity
+              # Remove ubiquity icon from desktop
+              rm -rf /home/*/Desktop/ubiquity*.desktop
+              # Remove ubiquity from menus
+              sed -i -e 's/NoDisplay=false/NoDisplay=true/' /usr/share/applications/ubiquity.desktop
             # Create bodhibuilder desktop file for menus
             yes | cp -f /etc/bodhibuilder/applications/bodhibuilder-gtk.desktop /usr/share/applications/
             # Add custom repositories to the installed OS

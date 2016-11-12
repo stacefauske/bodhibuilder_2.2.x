@@ -903,9 +903,9 @@ FOO
     elif [ "${OPT1}" = "dist" ] ; then
         # copy over bb's ubiquity.desktop to the host system with the custom name 'Install ${LIVECDLABEL}'
         log_msg "copying over bodhibuilder's ubiquity.desktop to the host system with the custom name 'Install ${LIVECDLABEL}'"
-        if [ ! -e /usr/share/applications/UBIQUITY.desktop ] ; then
-          echo "- rename original ubiquity.desktop to UBIQUITY.desktop" >>${WORKDIR}/bodhibuilder.log
-          find /usr/share/applications -name 'ubiquity.desktop' -execdir mv '{}' UBIQUITY.desktop \;
+        if [ ! -e /usr/share/applications/UBIQUITY.desktop_ORIG ] ; then
+          echo "- rename original ubiquity.desktop to UBIQUITY.desktop_ORIG" >>${WORKDIR}/bodhibuilder.log
+          find /usr/share/applications -name 'ubiquity.desktop' -execdir mv '{}' UBIQUITY.desktop_ORIG \;
         fi
         echo "- move custom ubiquity.desktop into applications dir" >>${WORKDIR}/bodhibuilder.log
         cp -f /etc/bodhibuilder/ubiquity/ubiquity.desktop /usr/share/applications/
@@ -1233,10 +1233,10 @@ FOO
     
     # restore ubiquity.desktop
     if  [ "${OPT1}" = "dist" ] ; then
-      if [ -e /usr/share/applications/UBIQUITY.desktop ] ; then
+      if [ -e /usr/share/applications/UBIQUITY.desktop_ORIG ] ; then
         log_msg "restoring ubiquity.desktop on the host system"
         mv -f /usr/share/applications/ubiquity.desktop /usr/share/applications/ubiquity.desktop_BB
-        mv -f /usr/share/applications/UBIQUITY.desktop /usr/share/applications/ubiquity.desktop
+        mv -f /usr/share/applications/UBIQUITY.desktop_ORIG /usr/share/applications/ubiquity.desktop
       fi
     fi
 }
