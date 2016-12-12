@@ -1418,7 +1418,7 @@ iso (){
                 log_msg "creating 64-bit ISO with xorriso"
                 ${CREATEISO} -as mkisofs \
                   -isohybrid-mbr ${WORKDIR}/ISOTMP/isolinux/isohdpfx.bin \
-                  -partition_offset 98 \
+                  -partition_offset 16 \
                   -cache-inodes -J -l \
                   -iso-level 3 \
                   -V "${LIVECDLABEL}" \
@@ -1428,7 +1428,7 @@ iso (){
                   -boot-load-size 4 \
                   -boot-info-table \
                   -eltorito-alt-boot \
-                  --efi-boot boot/grub/efi.img \
+                  -e boot/grub/efi.img \
                   -no-emul-boot \
                   -isohybrid-gpt-basdat \
                   -isohybrid-apm-hfsplus \
@@ -1438,7 +1438,7 @@ iso (){
                 log_msg "creating 32-bit ISO with xorriso"
                 ${CREATEISO} -as mkisofs \
                   -isohybrid-mbr ${WORKDIR}/ISOTMP/isolinux/isohdpfx.bin \
-                  -partition_offset 98 \
+                  -partition_offset 16 \
                   -cache-inodes -J -l \
                   -iso-level 3 \
                   -V "${LIVECDLABEL}" \
@@ -1448,7 +1448,7 @@ iso (){
                   -boot-load-size 4 \
                   -boot-info-table \
                   -eltorito-alt-boot \
-                  --efi-boot boot/grub/efi.img \
+                  -e boot/grub/efi.img \
                   -no-emul-boot \
                   -isohybrid-gpt-basdat \
                   -isohybrid-apm-hfsplus \
