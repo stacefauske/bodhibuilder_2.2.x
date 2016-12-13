@@ -903,12 +903,18 @@ FOO
     elif [ "${OPT1}" = "dist" ] ; then
         # copy over bb's ubiquity.desktop to the host system with the custom name 'Install ${LIVECDLABEL}'
         log_msg "copying over bodhibuilder's ubiquity.desktop to the host system with the custom name 'Install ${LIVECDLABEL}'"
+        echo "- All available ubiquity files in /usr/share/applications/"
+        ls -l /usr/share/applications/UBIQUITY* >>${WORKDIR}/bodhibuilder.log
+        ls -l /usr/share/applications/ubiquity* >>${WORKDIR}/bodhibuilder.log
         if [ ! -e /usr/share/applications/UBIQUITY.desktop_ORIG ] ; then
           echo "- rename original ubiquity.desktop to UBIQUITY.desktop_ORIG" >>${WORKDIR}/bodhibuilder.log
-          find /usr/share/applications -name 'ubiquity.desktop' -execdir mv '{}' UBIQUITY.desktop_ORIG \;
+          find /usr/share/applications -name 'ubiquity.desktop' -execdir mv -v '{}' UBIQUITY.desktop_ORIG \; >>${WORKDIR}/bodhibuilder.log
         fi
-        echo "- move custom ubiquity.desktop into applications dir" >>${WORKDIR}/bodhibuilder.log
-        cp -f /etc/bodhibuilder/ubiquity/ubiquity.desktop /usr/share/applications/
+        if [ -e /usr/share/applications/UBIQUITY.desktop ] ; then
+          yes | rm -vrf /usr/share/applications/UBIQUITY.desktop >>${WORKDIR}/bodhibuilder.log
+        fi
+        echo "- copy custom ubiquity.desktop into applications dir" >>${WORKDIR}/bodhibuilder.log
+        cp -vf /etc/bodhibuilder/ubiquity/ubiquity.desktop /usr/share/applications/ubiquity.desktop >>${WORKDIR}/bodhibuilder.log
         echo "- set custom name to 'Install ${LIVECDLABEL}'" >>${WORKDIR}/bodhibuilder.log
         sed -i "s/_LIVE_CD_LABEL_/${LIVECDLABEL}/" /usr/share/applications/ubiquity.desktop &> /dev/null
     fi # end $OPT1 = backup or dist
