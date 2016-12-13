@@ -7,12 +7,12 @@ menu background splash.png
 menu color title 1;37;44 #c0ffffff #00000000 std
 
 label live
-  menu label live - boot the Live System
+  menu label live - legacy boot the Live System
   kernel /casper/vmlinuz.efi
   append  file=/cdrom/preseed/custom.seed boot=casper initrd=/casper/initrd.lz quiet splash --
 
 label xforcevesa
-  menu label xforcevesa - boot Live in safe graphics mode
+  menu label xforcevesa - legacy boot Live in safe graphics mode
   kernel /casper/vmlinuz.efi
   append  file=/cdrom/preseed/custom.seed boot=casper nomodeset xforcevesa initrd=/casper/initrd.lz quiet splash --
 
