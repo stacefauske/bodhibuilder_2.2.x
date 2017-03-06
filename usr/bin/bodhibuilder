@@ -64,6 +64,9 @@ Add custom repositories and the comments for them to the file
    /etc/bodhibuilder/apt/custom_repos
    and during firstboot of the newly installed OS, this entire file 
    will be appended to /etc/apt/sources.list.
+   * Be sure not to add repositories to this file that are already in /etc/apt/sources.list
+     otherwise you will have duplicate entries in /etc/apt/sources.list and the system
+     won't like it.
 
 
 Usage examples:

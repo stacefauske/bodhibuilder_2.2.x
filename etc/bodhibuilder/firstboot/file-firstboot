@@ -14,48 +14,43 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/sbin
 . /lib/lsb/init-functions
 
 do_start() {
-        #REM302
-        if [ "`cat /proc/cmdline | grep casper`" = "" ]; then
-            [ "$VERBOSE" != no ] && log_begin_msg "Running bodhibuilder-firstboot"
-            # Removes this script from boot:
-            (sleep 60 && update-rc.d -f bodhibuilder-firstboot remove) &
-            sed -i -e 's/root:x:/root:!:/g' /etc/shadow
-            ## Ubiquity
-              # Remove ubiquity icon from desktop
-              yes | rm -rf /home/*/Desktop/ubiquity*.desktop
-              yes | rm -rf /home/*/Desktop/UBIQUITY*.desktop
-              yes | rm -rf /usr/share/applications/UBIQUITY.desktop
-              # Remove ubiquity from menus
-              sed -i -e 's/NoDisplay=false/NoDisplay=true/' /usr/share/applications/ubiquity.desktop
-            # Create bodhibuilder desktop file for menus
-            yes | cp -f /etc/bodhibuilder/applications/bodhibuilder-gtk.desktop /usr/share/applications/
-            # Add custom repositories to the installed OS
-            cat /etc/bodhibuilder/apt/custom_repos >> /etc/apt/sources.list && echo '' > /etc/bodhibuilder/apt/custom_repos
-            # Replace OS grub with bodhibuilder's custom grub
-            yes | cp -f /etc/default/grub.bodhi /etc/default/grub
-            update-grub
-            
-            ################################################
-            ### Place your custom commands below this line
-            
-            # Please add custom repositories and comments for them into the file
-            #   /etc/bodhibuilder/apt/custom_repos
-            # This script will append everything in that file to the
-            # existing /etc/apt/sources.list file
-            
-            
-            ### Place your custom commands above this line
-            ################################################
-            
-            ES=$?
-            [ "$VERBOSE" != no ] && log_end_msg $ES
-            return $ES
-        fi
-
+    #REM302
+    if [ "`cat /proc/cmdline | grep casper`" = "" ]; then
+        [ "$VERBOSE" != no ] && log_begin_msg "Running bodhibuilder-firstboot"
+        # Removes this script from boot:
+        (sleep 60 && update-rc.d -f bodhibuilder-firstboot remove) &
+        sed -i -e 's/root:x:/root:!:/g' /etc/shadow
+        ## Ubiquity
+            # Remove ubiquity icon from desktop
+            yes | rm -rf /home/*/Desktop/ubiquity*.desktop
+            yes | rm -rf /home/*/Desktop/UBIQUITY*.desktop
+            yes | rm -rf /usr/share/applications/UBIQUITY.desktop
+            # Remove ubiquity from menus
+            sed -i -e 's/NoDisplay=false/NoDisplay=true/' /usr/share/applications/ubiquity.desktop
+        # Create bodhibuilder desktop file for menus
+        yes | cp -f /etc/bodhibuilder/applications/bodhibuilder-gtk.desktop /usr/share/applications/
+        # Add custom repositories to the installed OS
+        cat /etc/bodhibuilder/apt/custom_repos >> /etc/apt/sources.list && echo '' > /etc/bodhibuilder/apt/custom_repos
+        # Replace OS grub with bodhibuilder's custom grub
+        yes | cp -f /etc/default/grub.bodhi /etc/default/grub
+        update-grub
         
+        ################################################
+        ### Place your custom commands below this line
+        # Please add custom repositories and comments for them into the file
+        #   /etc/bodhibuilder/apt/custom_repos
+        # This script will append everything in that file to the
+        # existing /etc/apt/sources.list file
+        
+        ### Place your custom commands above this line
+        ################################################
+        
+        ES=$?
+        [ "$VERBOSE" != no ] && log_end_msg $ES
+        return $ES
+    fi
+}
 
-
-} 
 
 case "$1" in
     start)
