@@ -191,6 +191,9 @@ echo "------------------------------------------------------" >>${WORKDIR}/bodhi
 echo "Original disk size information" >>${WORKDIR}/bodhibuilder.log
 df -h >>${WORKDIR}/bodhibuilder.log
 echo "------------------------------------------------------" >>${WORKDIR}/bodhibuilder.log
+echo "Original mount information" >>${WORKDIR}/bodhibuilder.log
+mount >>${WORKDIR}/bodhibuilder.log
+echo "------------------------------------------------------" >>${WORKDIR}/bodhibuilder.log
 
 
 # echo bodhibuilder .conf & .version vars to log
