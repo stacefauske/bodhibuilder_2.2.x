@@ -315,6 +315,9 @@ case $1  in
     backup|-b )
         log_msg "System Backup Mode Selected"
         OPT1="backup"
+        if [ "${CUSTOMISO}" == "bodhibuilder.iso" ] ; then
+          CUSTOMISO="bodhibuilder_backup.iso"
+        fi
     ;;
     clean|-c )
         echo "Removing the build directory now..."
@@ -325,6 +328,9 @@ case $1  in
     dist|-d )
         log_msg "Distribution Mode Selected"
         OPT1="dist"
+        if [ "${CUSTOMISO}" == "bodhibuilder.iso" ] ; then
+          CUSTOMISO="bodhibuilder_dist.iso"
+        fi
     ;;
     * )
         man bodhibuilder
