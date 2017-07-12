@@ -304,7 +304,7 @@ fi
 
 
 if [ ! "${CUSTOMISO}" ] ; then # if we still don't have an iso name
-    CUSTOMISO="custom$1.iso"
+    CUSTOMISO="custom_${1}.iso"
 fi
 
 
@@ -435,9 +435,12 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
 
 
 
-    # new exclusions
+    ## new exclusions code
+    # All exclusions from config file
     ALLEXCLUDES=
+    # Only the exclusions in the /var/ directory
     VAREXCLUDES=
+    # Only the exclusions in the /etc/ directory
     ETCEXCLUDES=
     if [ "${EXCLUDES}" ] ; then
       echo "EXCLUDES variable is not empty" >> ${WORKDIR}/bodhibuilder.log
@@ -482,22 +485,24 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
       echo "${ETCEXCLUDES}" >> ${WORKDIR}/bodhibuilder.log
     fi
 
-    # rsync /etc/ & /var/ dirs
-    varsync="rsync -a --exclude='*.log.*' --exclude='*.pid' --exclude='*.bak' --exclude='*.[0-9].gz' --exclude='*.deb' --exclude='kdecache*' --exclude='*~' ${VAREXCLUDES} /var/. ${WORKDIR}/dummysys/var/."
+    ## rsync /etc/ & /var/ dirs
+    #   fix - this var_sync isn't preserving permissions & ownerships for log files
+    #~ var_sync="rsync -a --exclude='*.log.*' --exclude='*.pid' --exclude='*.bak' --exclude='*.[0-9].gz' --exclude='*.deb' --exclude='kdecache*' --exclude='*~' ${VAREXCLUDES} /var/. ${WORKDIR}/dummysys/var/."
+    var_sync="rsync -a --exclude='*.log.[0-9]*' --exclude='*.log.old' --exclude='syslog.[0-9]*' --exclude='[bw]tmp.[0-9]*' --exclude='*.pid' --exclude='*.bak' --exclude='*.[0-9].gz' --exclude='*.deb' --exclude='kdecache*' --exclude='*~' ${VAREXCLUDES} /var/. ${WORKDIR}/dummysys/var/."
     echo "   syncing /var/ directory using:" >> ${WORKDIR}/bodhibuilder.log
-    echo "> ${varsync}" >> ${WORKDIR}/bodhibuilder.log
-    eval ${varsync}
+    echo "> ${var_sync}" >> ${WORKDIR}/bodhibuilder.log
+    eval ${var_sync}
 
-    etcsync="rsync -a ${ETCEXCLUDES} /etc/. ${WORKDIR}/dummysys/etc/."
+    etc_sync="rsync -a ${ETCEXCLUDES} /etc/. ${WORKDIR}/dummysys/etc/."
     echo "   syncing /etc/ directory using:" >> ${WORKDIR}/bodhibuilder.log
-    echo "> ${etcsync}" >> ${WORKDIR}/bodhibuilder.log
-    eval ${etcsync}
+    echo "> ${etc_sync}" >> ${WORKDIR}/bodhibuilder.log
+    eval ${etc_sync}
     echo "done syncing" >> ${WORKDIR}/bodhibuilder.log
 
 
 
 
-    #Custom grub config
+    ## Custom grub config
     if [ -e /etc/bodhibuilder/grub/grub.bodhi ] ; then
       log_msg "Found custom grub for ${DISTNAME}"
       cp -f /etc/bodhibuilder/grub/grub.bodhi ${WORKDIR}/dummysys/etc/default/
@@ -535,7 +540,9 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
     rm -f ${WORKDIR}/dummysys/etc/ssh/*key*
     rm -f ${WORKDIR}/dummysys/var/lib/dbus/machine-id
     rsync -a /dev/urandom ${WORKDIR}/dummysys/dev/
-    find ${WORKDIR}/dummysys/var/log/ ${WORKDIR}/dummysys/var/lock/ ${WORKDIR}/dummysys/var/backups/ ${WORKDIR}/dummysys/var/tmp/ ${WORKDIR}/dummysys/var/crash/ ${WORKDIR}/dummysys/var/lib/ubiquity/ -type f -exec rm -f {} \;
+    # fix - this rm is screwing up permissions & ownerships for log files, so removing the find in "${WORKDIR}/dummysys/var/log/"
+    #~ find ${WORKDIR}/dummysys/var/log/ ${WORKDIR}/dummysys/var/lock/ ${WORKDIR}/dummysys/var/backups/ ${WORKDIR}/dummysys/var/tmp/ ${WORKDIR}/dummysys/var/crash/ ${WORKDIR}/dummysys/var/lib/ubiquity/ -type f -exec rm -f {} \;
+    find ${WORKDIR}/dummysys/var/lock/ ${WORKDIR}/dummysys/var/backups/ ${WORKDIR}/dummysys/var/tmp/ ${WORKDIR}/dummysys/var/crash/ ${WORKDIR}/dummysys/var/lib/ubiquity/ -type f -exec rm -f {} \;
 
 
     if [ "${OPT1}" = "dist" ] ; then
@@ -567,9 +574,16 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
             ln -sf ../run run
         fi
 
-        for i in dpkg.log lastlog mail.log syslog auth.log daemon.log faillog lpr.log mail.warn user.log boot debug mail.err messages wtmp bootstrap.log dmesg kern.log mail.info; do
-            touch ${WORKDIR}/dummysys/var/log/${i}
-        done
+        ## create log files (fix - this method does not preserve ownerships or permissions, see 'find' below)
+        #~ for i in dpkg.log lastlog mail.log syslog auth.log daemon.log faillog lpr.log mail.warn user.log boot debug mail.err messages wtmp bootstrap.log dmesg kern.log mail.info; do
+            #~ touch ${WORKDIR}/dummysys/var/log/${i}
+        #~ done
+        # use this to preserve file ownership & permissions, but blank out the log files
+        echo "Blanking out var/log/ files"
+        find ${WORKDIR}/dummysys/var/log/ -type f -exec truncate -s 0 {} \;
+        # update the timestamp to right now
+        echo "Updating timestamp on var/log files"
+        find ${WORKDIR}/dummysys/var/log/ -exec touch {} \;
 
 
 
