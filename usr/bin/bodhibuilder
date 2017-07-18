@@ -407,8 +407,9 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
 
 
     # Check and log the display manager in use:
-    currentdm="`cat /etc/X11/default-display-manager`"
-    echo "Current Display Manager is @ ${currentdm}"
+    currentdm_path="`cat /etc/X11/default-display-manager`"
+    currentdm=`basename ${currentdm_path}`
+    echo "Current Display Manager is ${currentdm}  @  ${currentdm_path}"
 
 
 
@@ -612,6 +613,20 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
             rm -f ${WORKDIR}/dummysys/var/lib/mlocate/mlocate.db
             updatedb -l 1 -o ${WORKDIR}/dummysys/var/lib/mlocate/mlocate.db
         fi
+
+
+
+
+        # If lightdm has an autologin-user in lightdm.conf, change it to ${LIVEUSER}
+        if [ "${currentdm}" == "lightdm" ] ; then
+          if [ -f "${WORKDIR}/dummysys/etc/lightdm/lightdm.conf" ] ; then
+            ldm_auto_login_check=`grep -o 'autologin-user=' ${WORKDIR}/dummysys/etc/lightdm/lightdm.conf`
+            if [ "${ldm_auto_login_check}" ] ; then
+              sed -i "s/^autologin-user=.*\$/autologin-user=${LIVEUSER}/g" ${WORKDIR}/dummysys/etc/lightdm/lightdm.conf
+            fi
+          fi
+        fi
+
 
 
 
@@ -1101,7 +1116,7 @@ FOO
     #~ log_msg "Working in ${PWD}"
 
 
-    #exit if missing... either vmlinuz or vmlinuz.efi
+    #exit if missing vmlinuz.efi
     if [ ! -f ${WORKDIR}/ISOTMP/casper/vmlinuz.efi ] ; then
         log_msg "vmlinuz.efi not found in casper. Exiting"
         exit 1
@@ -1133,14 +1148,14 @@ FOO
     # set some folders to add or exclude from mksquashfs
     case ${OPT1} in
       backup )
-        # add folders to mksquashfs
+        # add folders to mksquashfs command
         for d in `ls / | grep -v etc | grep -v run | grep -v tmp | grep -v sys | grep -v var | grep -v dev | grep -v media | grep -v mnt | grep -v lost+found | grep -v proc`; do
             REALFOLDERS="${REALFOLDERS} /${d}"
         done
       ;;
 
       dist )
-        # add folders to mksquashfs
+        # add folders to mksquashfs command
         for d in `ls / | grep -v etc | grep -v run | grep -v tmp | grep -v sys | grep -v var | grep -v dev | grep -v media | grep -v mnt | grep -v lost+found | grep -v proc | grep -v home`; do
             REALFOLDERS="${REALFOLDERS} /${d}"
         done
