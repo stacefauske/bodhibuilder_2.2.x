@@ -2,17 +2,17 @@ default vesamenu.c32
 prompt 0
 timeout 100
 
-menu title Boot __DISTNAME__ Live Disc
+menu title Boot __DISTNAME__ Live Disc In Legacy / BIOS Mode
 menu background splash.png
 menu color title 1;37;44 #c0ffffff #00000000 std
 
 label live
-  menu label live - legacy boot the Live System
+  menu label live - Legacy/BIOS boot the Live System
   kernel /casper/vmlinuz.efi
   append  file=/cdrom/preseed/custom.seed boot=casper initrd=/casper/initrd.lz quiet splash --
 
 label xforcevesa
-  menu label xforcevesa - legacy boot Live in safe graphics mode
+  menu label xforcevesa - Legacy/BIOS boot Live in safe graphics mode
   kernel /casper/vmlinuz.efi
   append  file=/cdrom/preseed/custom.seed boot=casper nomodeset xforcevesa initrd=/casper/initrd.lz quiet splash --
 

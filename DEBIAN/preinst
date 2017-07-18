@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+
+# correct ownership & permissions in log files
+log_files="auth.log dmesg kern.log syslog"
+for i in ${log_files} ; do
+  curr_log_file="/var/log/${i}"
+  if [ "${i}" == "dmesg" ] ; then
+    chown root:adm ${curr_log_file}
+  else
+    chown syslog:adm ${curr_log_file}
+  fi
+  chmod 644 ${curr_log_file}
+done
+

@@ -585,10 +585,10 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
             #~ touch ${WORKDIR}/dummysys/var/log/${i}
         #~ done
         # use this to preserve file ownership & permissions, but blank out the log files
-        echo "Blanking out var/log/ files"
+        log_msg "Blanking out var/log/ files"
         find ${WORKDIR}/dummysys/var/log/ -type f -exec truncate -s 0 {} \;
         # update the timestamp to right now
-        echo "Updating timestamp on var/log files"
+        log_msg "Updating timestamp on var/log files"
         find ${WORKDIR}/dummysys/var/log/ -exec touch {} \;
 
 
@@ -598,10 +598,10 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
         # Fixes http://forums.bodhilinux.com/index.php?/topic/10506-installation-crashes-by-some-languages-rc1/
         # Ubiquity fails if the installation locale differs from the generated locale, so simply removing the
         # generated locale confs fixes the issue.
-        if [ -e ${WORKDIR}/dummysys/etc/default/locale ]; then
+        if [ -e ${WORKDIR}/dummysys/etc/default/locale ] ; then
             rm -f ${WORKDIR}/dummysys/etc/default/locale
         fi
-        if [ -e ${WORKDIR}/dummysys/var/lib/locales/supported.d/local ]; then
+        if [ -e ${WORKDIR}/dummysys/var/lib/locales/supported.d/local ] ; then
             rm -f ${WORKDIR}/dummysys/var/lib/locales/supported.d/local
         fi
     

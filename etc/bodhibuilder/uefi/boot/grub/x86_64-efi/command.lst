@@ -133,6 +133,7 @@ nativedisk: nativedisk
 net_add_addr: net
 net_add_dns: net
 net_add_route: net
+net_bootp6: net
 net_bootp: net
 net_del_addr: net
 net_del_dns: net
