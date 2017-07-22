@@ -343,6 +343,92 @@ esac
 
 
 
+# check for UID and/or GID 999 being already used on a dist build
+# we need these ID's 
+if [ "${OPT1}" == "dist" ] ; then
+  # check for uid 999 & associated username
+  uid_999_check=`id 999 | grep -o 'uid=999'`
+  uid_999_name=`id 999 | cut -d\( -f2 | cut -d\) -f1`
+  # check for gid 999 & associated group name
+  #~ gid_999_check=`id 999 | grep -o 'gid=999'`
+  gid_999_check=`grep '^.*:.*:999:' /etc/group`
+  gid_999_name=`grep '^.*:.*:999:' /etc/group | cut -d\:  -f1`
+  
+  if [ "${uid_999_check}" -o "${gid_999_check}" ] ; then
+    # first see if both are in use
+    if [ "${uid_999_check}" == "uid=999" -a "${gid_999_check}" ] ; then
+      log_msg ""
+      log_msg " !!!!! error !!!!!"
+      log_msg ""
+      log_msg " UID 999 = username --> ${uid_999_name}"
+      log_msg " GID 999 = group    --> ${gid_999_name}"
+      log_msg ""
+      log_msg " Bodhibuilder needs to use 999 for both UID and GID"
+      log_msg " in a dist build."
+      log_msg ""
+    fi
+    # UID verbiage
+    if [ "${uid_999_check}" == "uid=999" ] ; then
+      log_msg ""
+      log_msg " !!!!! error !!!!!"
+      log_msg ""
+      log_msg " UID 999 was found to be user -- ${uid_999_name}"
+      log_msg ""
+      log_msg " Please change this user's UID number away from 999."
+      log_msg " Bodhibuilder needs to use this UID number for the"
+      log_msg " live username in a 'dist' ISO."
+      log_msg ""
+      log_msg " UID's between 100 - 999 are typically system users,"
+      log_msg " so you can probably change the UID of ${uid_999_name} to"
+      log_msg " the next available UID below 999 that is not used."
+      log_msg " Please check file /etc/passwd to find the next"
+      log_msg " available UID."
+      log_msg ""
+      log_msg " You can probably change the UID using the command 'usermod -u'."
+      log_msg " However, please check the man page for 'usermod' for usage"
+      log_msg " and also be aware that file permissions might need to be changed"
+      log_msg " on your system to accomodate the UID change."
+      log_msg " Please do your homework, bodhibuilder is not responsible for file"
+      log_msg " ownership/permission problems related to a UID change"
+      log_msg " which has been performed manually."
+      log_msg ""
+    fi
+    # GID verbiage
+    if [ "${gid_999_check}" ] ; then
+      log_msg ""
+      log_msg " !!!!! error !!!!!"
+      log_msg ""
+      log_msg " GID 999 was found to be group -- ${gid_999_name}"
+      log_msg ""
+      log_msg " Please change this group's GID number away from 999."
+      log_msg " Bodhibuilder needs to use this GID number for a"
+      log_msg " group in a 'dist' ISO."
+      log_msg ""
+      log_msg " GID's between 100 - 999 are typically system groups,"
+      log_msg " so you can probably change the GID of ${gid_999_name} to"
+      log_msg " the next available GID below 999 that is not used."
+      log_msg " Please check file /etc/group to find the next"
+      log_msg " available GID."
+      log_msg ""
+      log_msg " You can probably change the GID using the command 'groupmod -g'."
+      log_msg " However, please check the man page for 'groupmod' for usage"
+      log_msg " and also be aware that file permissions might need to be changed"
+      log_msg " on your system to accomodate the GID change."
+      log_msg " Please do your homework, bodhibuilder is not responsible for file"
+      log_msg " ownership/permission problems related to a GID change"
+      log_msg " which has been performed manually."
+      log_msg ""
+    fi
+    log_msg " exiting bodhibuilder"
+    echo -n " (press any key) "
+    read -n1 redy
+    exit 1
+  else
+    log_msg " GID & UID 999 are not in use, OK"
+  fi
+fi
+
+
 
 
 ##### FUNCTION cdfs #####
