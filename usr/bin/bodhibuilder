@@ -353,7 +353,7 @@ if [ "${OPT1}" == "dist" ] ; then
   #~ gid_999_check=`id 999 | grep -o 'gid=999'`
   gid_999_check=`grep '^.*:.*:999:' /etc/group`
   gid_999_name=`grep '^.*:.*:999:' /etc/group | cut -d\:  -f1`
-  
+
   if [ "${uid_999_check}" -o "${gid_999_check}" ] ; then
     # first see if both are in use
     if [ "${uid_999_check}" == "uid=999" -a "${gid_999_check}" ] ; then
@@ -605,6 +605,7 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
         cp -rf /etc/bodhibuilder/grub/backgrounds/ ${WORKDIR}/dummysys/etc/grub.d/
       fi
     fi
+
     # Put a custom name into grub - need to use DISTRIB_DESCRIPTION rather than DISTRIB_ID
     if [ "${DISTNAME}" ] ; then
       if [ -e "${WORKDIR}/dummysys/etc/lsb-release" ] ; then
@@ -779,6 +780,7 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
     else # no hardware is connected
       inetstatus=1 # set to 1 to skip downloading of deb packages
     fi
+
     if [ "${inetstatus}" -eq 0 ] ; then # internet connection detected
       log_msg "connection to internet detected"
       # make sure apt-get cache is updated, or it might try to download the wrong version
@@ -790,8 +792,8 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
         log_msg "Installing isolinux"
         apt-get install isolinux
       fi
-      
-      
+
+
       # packages to be downloaded and moved into pool: -- 32/64-bit -- ONE directory
       if [ "${UBUVERSION}" -le 14 ] ; then
         dlpkg_32="b43-fwcutter bcmwl-kernel-source dkms efibootmgr fakeroot grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-ia32 grub-efi-ia32-bin grub-pc grub-pc-bin grub2-common libfakeroot libuniconf4.6 libwvstreams4.6-base libwvstreams4.6-extras lupin-support mouseemu oem-config oem-config-gtk oem-config-slideshow-ubuntu secureboot-db setserial user-setup wvdial" # 32-bit packages
@@ -808,17 +810,16 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
           dlpkg_all="${dlpkg_32}"
         ;;
       esac
-      
+
       log_msg "  downloading latest deb files for ${ARCH} packages:"
       log_msg "${dlpkg_all}"
-      cd ${WORKDIR}
-      mkdir dlpkgtempdir
-      cd dlpkgtempdir
-      
+      # create temp directory in ${WORKDIR}/ ..... now working in ${WORKDIR}/dlpkgtempdir/ while downloading debs
+      cd ${WORKDIR} && mkdir dlpkgtempdir && cd dlpkgtempdir 
+
       # download pkgs
       apt-get download ${dlpkg_all} | tee -a ${WORKDIR}/bodhibuilder.log
       chmod 755 ./* # still working in dlpkgtempdir
-      
+
       # make sure ALL files were successfully downloaded
       dlpkgpass="1"
       for dlpkgchk in ${dlpkg_all} ; do
@@ -830,10 +831,10 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
           echo "file ${dlpkgchkname} exists" >>${WORKDIR}/bodhibuilder.log
         fi
       done
-      
-      if [ "${dlpkgpass}" = "0" ] ; then # Didn't get all files downloaded
-        cd -
-        rm -rf ./dlpkgtempdir
+
+      # Didn't get all files downloaded, so get rid of temp directory
+      if [ "${dlpkgpass}" = "0" ] ; then 
+        cd ${WORKDIR} && rm -rf ./dlpkgtempdir
       fi
 
 
@@ -842,14 +843,18 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
       log_msg "...not downloading latest uefi pool debs"
       dlpkgpass="0"
     fi
+
     log_msg "Copying arch-specific debs into pool"
     if [ "${ARCH}" = "amd64" ] ; then
       echo "64-bit arch detected" >>${WORKDIR}/bodhibuilder.log
+      yes | rm -vrf /etc/bodhibuilder/uefi/pool/* >>${WORKDIR}/bodhibuilder.log
       cp -av /etc/bodhibuilder/debs/amd64/* /etc/bodhibuilder/uefi/pool/ >>${WORKDIR}/bodhibuilder.log
     else
       echo "32-bit arch detected" >>${WORKDIR}/bodhibuilder.log
+      yes | rm -vrf /etc/bodhibuilder/uefi/pool/* >>${WORKDIR}/bodhibuilder.log
       cp -av /etc/bodhibuilder/debs/i386/* /etc/bodhibuilder/uefi/pool/ >>${WORKDIR}/bodhibuilder.log
     fi
+
     log_msg "Moving all EFI files to the ISOTMP folder"
     cp -av /etc/bodhibuilder/uefi/* ${WORKDIR}/ISOTMP/ >>${WORKDIR}/bodhibuilder.log
     
@@ -858,15 +863,16 @@ log_msg "${WORKDIR} is on a ${DIRTYPE} filesystem"
     
     # now move deb files section if all have successfully downloaded:
     #  in the above step, the pool dir is copied into ISOTMP
-    #   (still working in dlpkgtempdir if dlpkgpass == 1)
+    #   (we should still be working IN dlpkgtempdir if dlpkgpass == 1)
     if [ "${dlpkgpass}" == "1" ] ; then # successful downloads
       log_msg "moving deb files into pool"
       rm -rf ${WORKDIR}/ISOTMP/pool/*
-      mv ./* ${WORKDIR}/ISOTMP/pool/ # mv all new files from dlpkgpass into pool
-      cd -
+      mv ${WORKDIR}/dlpkgtempdir/* ${WORKDIR}/ISOTMP/pool/ # mv all new files from dlpkgpass into pool
+      cd ${WORKDIR}
       rm -rf ./dlpkgtempdir
     else # unsuccessful downloads
       log_msg "no new deb files being copied into pool so as to maintain compatibility"
+      pwd >>${WORKDIR}/bodhibuilder.log
     fi
 
     # Creating a repository for the Ubiquity install
@@ -1527,22 +1533,22 @@ iso (){
               log_msg "The compressed filesystem is larger than genisoimage allows for a single file. You must try to reduce the amount of data you are backing up and try again."
               exit 1
           fi
-          
+
           # log message
           if [ "${ISOCMD}" = "genisoimage" ] ; then
             log_msg "Using genisoimage to create ISO."
           elif [ "${ISOCMD}" = "mkisofs" ] ; then
             log_msg "Using mkisofs to create ISO."
           fi
-          
+
           # check architecture
           if [ ! "${ARCH}" = "amd64" ] ; then
             log_msg "This ISO may not be UEFI bootable. At this time, UEFI is only fully supported in 64-bit OS."
           fi
-          
+
           isopass=1
         ;; # end genisoimage|mkisofs case select
-        
+
         * ) # none of the three ISO creation programs are found on OS
           log_msg "ERROR: xorriso, genisoimage, or mkisofs programs not found;"
           log_msg "because of this the iso was not created. Exiting"
@@ -1612,10 +1618,10 @@ iso (){
             ${CREATEISO} -iso-level 3 -quiet -r -V "${LIVECDLABEL}" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ${WORKDIR}/${CUSTOMISO} "${WORKDIR}/ISOTMP" 2>>${WORKDIR}/bodhibuilder.log 1>>${WORKDIR}/bodhibuilder.log
         ;;
     esac
-    
-    
-    
-    
+
+
+
+
     if [ ! -f ${WORKDIR}/${CUSTOMISO} ] ; then
         log_msg "The iso was not created. There was a problem. Exiting"
         exit 1
